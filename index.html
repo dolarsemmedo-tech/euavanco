@@ -274,6 +274,8 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 
 
 
+
+
 <style id="custom-treadmill-styles">
 /* Força a transição linear contínua nos carrosséis de imagem (efeito esteira) */
 .elementor-widget-image-carousel .swiper-wrapper,
@@ -1451,11 +1453,23 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
+
+
 <script id="custom-carousel-script">
 (function() {
+    var configuredCount = 0;
+    var totalSwipers = 3; // Cursos Reconhecidos, Cursos Livres, Histórias de Sucesso
+    var swiperPollInterval = null;
+    
     function startAndConfigureSwipers() {
+        if (typeof jQuery === 'undefined') return;
+        
         jQuery('.swiper-container, .swiper').each(function() {
             var $swiperEl = jQuery(this);
+            
+            // Skip if already configured
+            if ($swiperEl.attr('data-configured') === 'true') return;
+            
             var swiperInstance = $swiperEl.data('swiper') || this.swiper;
             
             if (swiperInstance && swiperInstance.autoplay) {
@@ -1478,8 +1492,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 
                 // Remove all manual hover event listeners
                 $swiperEl.off('mouseenter mouseleave');
+                
+                // Mark as successfully configured
+                $swiperEl.attr('data-configured', 'true');
+                configuredCount++;
+                console.log('Successfully configured Swiper instance #' + configuredCount);
             }
         });
+        
+        // Once all 3 carousels are successfully configured, stop polling
+        if (configuredCount >= totalSwipers && swiperPollInterval) {
+            clearInterval(swiperPollInterval);
+            console.log('All Swiper carousels successfully initialized and configured natively.');
+        }
     }
 
     // Poll for jQuery to be loaded to completely avoid any script loading race conditions
@@ -1489,21 +1514,20 @@ document.addEventListener("DOMContentLoaded", function() {
         if (typeof jQuery !== 'undefined') {
             clearInterval(jQueryPoll);
             
-            // Execute configuration immediately and then schedule followups to handle Elementor delayed init
-            startAndConfigureSwipers();
+            // Start polling for Swiper initialization every 200ms
+            swiperPollInterval = setInterval(startAndConfigureSwipers, 200);
             
-            setTimeout(startAndConfigureSwipers, 500);
-            setTimeout(startAndConfigureSwipers, 1500);
-            setTimeout(startAndConfigureSwipers, 3000);
-            
+            // Also run on scroll/load just in case
             window.addEventListener('load', startAndConfigureSwipers);
             window.addEventListener('scroll', startAndConfigureSwipers);
             
-            // Listen to Elementor init
-            jQuery(window).on('elementor/frontend/init', function() {
-                setTimeout(startAndConfigureSwipers, 500);
-            });
-        } else if (checkCount > 100) { // Stop polling after 5 seconds to save resources if jQuery fails
+            // Safety timeout: stop polling after 15 seconds to save resources if some carousels don't exist
+            setTimeout(function() {
+                if (swiperPollInterval) {
+                    clearInterval(swiperPollInterval);
+                }
+            }, 15000);
+        } else if (checkCount > 200) { // Stop polling after 10 seconds if jQuery fails
             clearInterval(jQueryPoll);
             console.warn('jQuery not found. Carousel config skipped.');
         }
