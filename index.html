@@ -198,109 +198,65 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 
 
 
-<style id="custom-hero-animations">
+
+
+
+
+<style id="custom-scroll-reveal-styles">
 /* ========================================================
-   ANIMAÇÕES SOFISTICADAS NA SEÇÃO PRINCIPAL (HERO)
+   SISTEMA DE ANIMAÇÃO AO ROLAR A TELA (SCROLL REVEAL)
    ======================================================== */
 
-/* Keyframe para o Surgimento Suave (Fade In Up) */
-@keyframes heroFadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Keyframe para o Foguete Flutuando (Efeito Gravidade) */
-@keyframes rocketFloat {
-    0% {
-        transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-15px) rotate(4deg);
-    }
-    100% {
-        transform: translateY(0px) rotate(0deg);
-    }
-}
-
-/* Animação do Título Principal (Construa sua Carreira) */
+/* Configuração Inicial de invisibilidade para os elementos que vão surgir */
 .elementor-element-4827e1c7, 
-.elementor-element-36b75d89 {
-    opacity: 0;
-    animation: heroFadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-}
-
-/* Configuração Inicial da Lista de Benefícios */
+.elementor-element-36b75d89,
 .elementor-element-7ef56d00 .elementor-icon-list-item,
-.elementor-element-1018c2ab .elementor-icon-list-item {
-    opacity: 0;
-    animation: heroFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+.elementor-element-1018c2ab .elementor-icon-list-item,
+.elementor-element-38869286,
+.elementor-element-20b1ea80 .elementor-icon-list-item {
+    opacity: 0 !important;
+    transform: translateY(30px) !important;
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Animação Escalonada (Staggered) para os itens da lista */
-.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(1),
-.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(1) {
-    animation-delay: 0.4s !important;
-}
-.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(2),
-.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(2) {
-    animation-delay: 0.6s !important;
-}
-.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(3),
-.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(3) {
-    animation-delay: 0.8s !important;
-}
-.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(4),
-.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(4) {
-    animation-delay: 1.0s !important;
+/* Classe ativada via JavaScript quando o usuário rola até a seção */
+.reveal-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
 
-/* Animação do Ícone do Foguete Flutuante */
+/* Efeito Cascata (Staggered Delay) para a Seção 1 (Hero) - Desktop & Mobile */
+.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(1).reveal-active,
+.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(1).reveal-active { transition-delay: 0.1s !important; }
+.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(2).reveal-active,
+.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(2).reveal-active { transition-delay: 0.3s !important; }
+.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(3).reveal-active,
+.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(3).reveal-active { transition-delay: 0.5s !important; }
+.elementor-element-7ef56d00 .elementor-icon-list-item:nth-child(4).reveal-active,
+.elementor-element-1018c2ab .elementor-icon-list-item:nth-child(4).reveal-active { transition-delay: 0.7s !important; }
+
+/* Efeito Cascata (Staggered Delay) para a Seção 2 (Por que Acessar) */
+.elementor-element-20b1ea80 .elementor-icon-list-item:nth-child(1).reveal-active { transition-delay: 0.2s !important; }
+.elementor-element-20b1ea80 .elementor-icon-list-item:nth-child(2).reveal-active { transition-delay: 0.4s !important; }
+.elementor-element-20b1ea80 .elementor-icon-list-item:nth-child(3).reveal-active { transition-delay: 0.6s !important; }
+
+
+/* Animação Contínua do Foguete (Não precisa de scroll reveal, ele flutua sempre) */
+@keyframes rocketFloat {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(4deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
 .elementor-element-2138700f {
     animation: rocketFloat 5s ease-in-out infinite !important;
     transform-origin: center bottom;
-    /* Adicionar um leve brilho no foguete para parecer ativo */
     filter: drop-shadow(0 0 8px rgba(86, 187, 123, 0.3));
     transition: filter 0.3s ease;
 }
 
 .elementor-element-2138700f:hover {
     filter: drop-shadow(0 0 15px rgba(86, 187, 123, 0.6));
-}
-</style>
-
-<style id="custom-section2-animations">
-/* ========================================================
-   ANIMAÇÕES SOFISTICADAS NA SEGUNDA SEÇÃO (POR QUE ACESSAR)
-   ======================================================== */
-
-/* Animação do Título (POR QUE ACESSAR NOSSA PLATAFORMA?) */
-.elementor-element-38869286 {
-    opacity: 0;
-    animation: heroFadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-    animation-delay: 0.2s !important; /* Começa um pouco depois do topo */
-}
-
-/* Configuração Inicial da Lista da Segunda Seção */
-.elementor-element-20b1ea80 .elementor-icon-list-item {
-    opacity: 0;
-    animation: heroFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-}
-
-/* Animação Escalonada (Staggered) para os itens da lista */
-.elementor-element-20b1ea80 .elementor-icon-list-item:nth-child(1) {
-    animation-delay: 0.5s !important;
-}
-.elementor-element-20b1ea80 .elementor-icon-list-item:nth-child(2) {
-    animation-delay: 0.7s !important;
-}
-.elementor-element-20b1ea80 .elementor-icon-list-item:nth-child(3) {
-    animation-delay: 0.9s !important;
 }
 </style>
 </head>
@@ -1432,4 +1388,40 @@ const a=JSON.parse(document.getElementById("wp-emoji-settings").textContent),o=(
 </script>
 	
 
+
+<script id="custom-scroll-reveal-script">
+document.addEventListener("DOMContentLoaded", function() {
+    // Configurações do Observador
+    const observerOptions = {
+        root: null, // usa a tela inteira (viewport)
+        rootMargin: "0px 0px -80px 0px", // ativa um pouco antes de aparecer totalmente
+        threshold: 0.1 // dispara quando 10% do elemento estiver visível
+    };
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("reveal-active");
+                observer.unobserve(entry.target); // Para de observar após animar uma vez
+            }
+        });
+    }, observerOptions);
+
+    // Seletores dos elementos que devem surgir suavemente ao rolar
+    const elementsToReveal = [
+        '.elementor-element-4827e1c7', // Título Hero Desktop
+        '.elementor-element-36b75d89', // Título Hero Mobile
+        '.elementor-element-7ef56d00 .elementor-icon-list-item', // Itens Lista Hero Desktop
+        '.elementor-element-1018c2ab .elementor-icon-list-item', // Itens Lista Hero Mobile
+        '.elementor-element-38869286', // Título Seção 2
+        '.elementor-element-20b1ea80 .elementor-icon-list-item' // Itens Lista Seção 2
+    ];
+
+    elementsToReveal.forEach(selector => {
+        document.querySelectorAll(selector).forEach(el => {
+            revealObserver.observe(el);
+        });
+    });
+});
+</script>
 </body></html>
