@@ -1,0 +1,26 @@
+# Ignorar scripts temporários e de diagnóstico
+check*.js
+clean_residual.ps1
+count_slides.js
+delete_lines.ps1
+extract_images_d153007.js
+find*.ps1
+fix*.js
+fix*.ps1
+inject*.js
+insert_new_custom_carousel.js
+inspect*.js
+print*.js
+search*.js
+verify*.ps1
+find*.js
+treadmill_fix.js
+undo_faq.js
+validate_html_js.js
+card_effects.js
+check.js
+fade_effect.js
+faq_styles.js
+scroll_trigger.js
+animate_hero.js
+animate_section2.js
