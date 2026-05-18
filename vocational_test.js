@@ -1,95 +1,130 @@
 /**
- * EADon - Teste Vocacional Premium Engine (Google Gemini 1.5 Flash)
+ * EADon - Teste Vocacional Premium Engine (Howard Gardner Model)
  * ------------------------------------------------------------------
- * Handles the step-by-step vocational test, voice input, lead capture,
- * Google Sheets integration, and Gemini AI analysis with custom redirects.
+ * Handles the step-by-step vocational test based on the 32 objective questions
+ * using Gardner's Multiple Intelligences Theory. All calculations are 100%
+ * mathematical and processed locally in the browser with lead capture.
  */
 
 (function () {
   // Configuration
-  const GEMINI_API_KEY = "AIzaSyAug4f1lYbT_55PmOR0E7CTtjdQXUbRFuI";
-  const GEMINI_MODEL = "gemini-1.5-flash";
-  
   // Set your Google Sheets Web App URL here. 
   // If empty, the system will save leads locally to localStorage as a fallback.
   const GOOGLE_SHEETS_WEBHOOK_URL = ""; 
 
-  // Questions Database
+  // 32-Question Database mapped to the 8 Intelligences
   const questions = [
-    {
-      id: "tempoLivre",
-      type: "text",
-      question: "O que você realmente gosta de fazer no seu tempo livre?",
-      placeholder: "Ex: Gosto de ler sobre tecnologia, desenhar, organizar coisas, ajudar pessoas com conselhos, consertar aparelhos...",
-      voiceHelp: "Dica: Você pode clicar em 'Gravar por Voz' e falar naturalmente!"
-    },
-    {
-      id: "ambiente",
-      type: "select",
-      question: "Onde você se sente melhor trabalhando?",
-      options: [
-        { value: "escritorio", label: "🏢 Em um escritório estruturado ou em Home Office focado" },
-        { value: "saude", label: "🏥 Em hospitais, clínicas ou ajudando no bem-estar de pessoas" },
-        { value: "criativo", label: "🛠️ Em um canteiro de obras, laboratório ou oficina de criação/manutenção" },
-        { value: "negocios", label: "🤝 Em trânsito, negociando e fechando parcerias com clientes" }
-      ]
-    },
-    {
-      id: "habilidades",
-      type: "text",
-      question: "Quais matérias na escola você tinha mais facilidade ou interesse?",
-      placeholder: "Ex: Matemática e Ciências / Português e Redação / Artes e Biologia / História...",
-      voiceHelp: "Dica: Diga as matérias que você mais curtia ou tinha facilidade!"
-    },
-    {
-      id: "estilo",
-      type: "select",
-      question: "Você prefere trabalhar sozinho e focado, ou em equipe colaborando?",
-      options: [
-        { value: "focado", label: "👤 Trabalhar de forma individual, focando nas minhas próprias entregas" },
-        { value: "equipe", label: "👥 Trabalhar em equipe, colaborando e unindo diferentes ideias" }
-      ]
-    },
-    {
-      id: "admiracao",
-      type: "text",
-      question: "Que tipo de profissional você mais admira e por quê?",
-      placeholder: "Ex: Médicos porque salvam vidas, Empreendedores porque constroem coisas do zero, Artistas pelo design...",
-      voiceHelp: "Dica: Cite uma profissão que te inspira e o motivo!"
-    },
-    {
-      id: "desafio",
-      type: "select",
-      question: "Como você prefere resolver problemas no seu dia a dia?",
-      options: [
-        { value: "logica", label: "📊 Usando lógica, análise de dados, números, processos e ordem" },
-        { value: "criatividade", label: "🎨 Usando criatividade, intuição, diálogo, empatia e negociação" }
-      ]
-    },
-    {
-      id: "criacao",
-      type: "text",
-      question: "Se você pudesse criar um negócio ou projeto hoje, sobre o que seria?",
-      placeholder: "Ex: Um aplicativo inovador, uma clínica de cuidados, uma loja física ou digital, uma escola...",
-      voiceHelp: "Dica: Pense livremente no seu projeto ou negócio dos sonhos!"
-    },
-    {
-      id: "objetivo",
-      type: "select",
-      question: "O que você busca primeiro na sua carreira profissional?",
-      options: [
-        { value: "estabilidade", label: "🛡️ Estabilidade, plano de carreira claro, previsibilidade e segurança" },
-        { value: "crescimento", label: "⚡ Liberdade, autonomia, crescimento acelerado e altas comissões" }
-      ]
-    }
+    { id: 1, text: "Costumo interpretar palavras, gestos e objetivos subentendidos em uma conversa.", category: "interpessoal" },
+    { id: 2, text: "As pessoas do meu convívio me consideram aventureiro.", category: "corporal" },
+    { id: 3, text: "Mantenho o foco em atividades que possuo maior domínio, mas não deixo de trabalhar pontos de melhoria em mim.", category: "intrapessoal" },
+    { id: 4, text: "Valorizo áreas do conhecimento que envolvam a natureza.", category: "naturalista" },
+    { id: 5, text: "Utilizo meu tempo livre para ouvir diferentes músicas e associá-las a outras composições.", category: "musical" },
+    { id: 6, text: "Eu gosto de escrever e sensibilizar o outro através de palavras.", category: "linguistica" },
+    { id: 7, text: "Possuo habilidades para reconhecer notas musicais provenientes de qualquer tipo de objeto.", category: "musical" },
+    { id: 8, text: "Eu me adapto às situações, mesmo que elas sejam complicadas ou delicadas.", category: "intrapessoal" },
+    { id: 9, text: "Possuo habilidade e capacidade de entender, criar e systematizar padrões.", category: "logico_matematica" },
+    { id: 10, text: "Recebo elogios de amigos por criar melodias que lhes agradam.", category: "musical" },
+    { id: 11, text: "Eu aprendo com facilidade e procuro utilizar novas ferramentas para qualquer atividade.", category: "intrapessoal" },
+    { id: 12, text: "Ao construir pensamentos e ideias, costumo fundamentá-los em argumentos concretos.", category: "logico_matematica" },
+    { id: 13, text: "Normalmente consigo ler nas entrelinhas o que uma pessoa quer dizer, mas tenho dificuldades em expressar com palavras.", category: "linguistica" },
+    { id: 14, text: "Prefiro atividades ao ar livre.", category: "naturalista" },
+    { id: 15, text: "Tenho facilidade em executar várias tarefas ao mesmo tempo sem necessariamente ter uma rotina.", category: "corporal" },
+    { id: 16, text: "Prefiro atuar na criação ao invés da execução de uma tarefa.", category: "espacial" },
+    { id: 17, text: "Gosto de expressar sentimentos verbalmente para as pessoas.", category: "linguistica" },
+    { id: 18, text: "Eu tenho facilidade em negociar, motivar e convencer as pessoas e não me preocupo com o que vão pensar.", category: "interpessoal" },
+    { id: 19, text: "Valorizo tarefas que possam desenvolver o meu lado pessoal e minhas relações.", category: "interpessoal" },
+    { id: 20, text: "Eu me sinto confortável em conviver com grandes grupos.", category: "interpessoal" },
+    { id: 21, text: "Consigo visualizar projetos claramente, antes mesmo de fazer os primeiros rascunhos.", category: "espacial" },
+    { id: 22, text: "Procuro ajudar os outros a resolverem os seus problemas.", category: "interpessoal" },
+    { id: 23, text: "Frequentemente utilizo o meu corpo para expressar emoções.", category: "corporal" },
+    { id: 24, text: "Gosto de identificar detalhes, pois valorizo a estética.", category: "espacial" },
+    { id: 25, text: "Prefiro resolver problemas complexos que envolvam números.", category: "logico_matematica" },
+    { id: 26, text: "Eu me conheço, compreendo minhas emoções e limites.", category: "intrapessoal" },
+    { id: 27, text: "Eu me interesso por planilhas e gráficos e gosto de explicar aos outros.", category: "logico_matematica" },
+    { id: 28, text: "Eu me considero muito empático.", category: "interpessoal" },
+    { id: 29, text: "Tenho facilidade em correlacionar minhas emoções a imagens, cenários e cores.", category: "espacial" },
+    { id: 30, text: "Prefiro expressar o meu ponto de vista de maneira mais ponderada e comedida.", category: "linguistica" },
+    { id: 31, text: "Gosto de tocar instrumentos musicais.", category: "musical" },
+    { id: 32, text: "Eu costumo viajar para lugares que tenham cachoeiras, praias e montanhas.", category: "naturalista" }
   ];
 
+  // Detailed profiles for the 8 Intelligences
+  const intelligencesDetails = {
+    interpessoal: {
+      name: "Interpessoal",
+      shortName: "Interpessoal",
+      icon: "🤝",
+      description: "Você é o mestre da empatia! Possui grande facilidade para compreender gestos e sentimentos, além de liderar, negociar e inspirar pessoas. Você se sente muito confortável em grandes grupos e sente prazer em ajudar a resolver conflitos de forma colaborativa.",
+      courses: ["Gestão de Recursos Humanos", "Psicologia", "Processos Gerenciais", "Gestão Comercial", "Marketing", "Serviço Social"]
+    },
+    naturalista: {
+      name: "Naturalista",
+      shortName: "Naturalista",
+      icon: "🍃",
+      description: "Sua conexão com o mundo vivo é inspiradora! Você valoriza a natureza, plantas, animais e se interessa profundamente pelo ecossistema e biologia. Prefere atividades dinâmicas ao ar livre e possui um olhar clínico para classificar e correlacionar espécies e fenômenos biológicos.",
+      courses: ["Agronomia", "Ciências Biológicas", "Gestão Ambiental", "Nutrição", "Medicina Veterinária"]
+    },
+    intrapessoal: {
+      name: "Intrapessoal",
+      shortName: "Intrapessoal",
+      icon: "👤",
+      description: "Você possui um autoconhecimento profundo e invejável! Entende perfeitamente suas próprias emoções, motivações, forças e limitações. Tem foco direcionado à autoaprendizagem e ao aprimoramento individual, sabendo adaptar-se com resiliência a cenários complexos.",
+      courses: ["Filosofia", "Psicologia", "Coaching e Mentoring", "Direito", "Sociologia", "Gestão Estratégica"]
+    },
+    musical: {
+      name: "Musical",
+      shortName: "Musical",
+      icon: "🎵",
+      description: "Você possui a mente ritmada pelos sons do mundo! Tem um ouvido incrivelmente apurado e facilidade para identificar notas, timbres, tons e criar melodias únicas. Valoriza a música em seu dia a dia e se expressa de maneira artística através de ritmos e instrumentos.",
+      courses: ["Produção Fonográfica", "Música", "Sonoplastia", "Licenciatura em Música", "Artes"]
+    },
+    linguistica: {
+      name: "Linguística",
+      shortName: "Linguística",
+      icon: "✍️",
+      description: "A linguagem é a sua maior ferramenta! Você tem enorme habilidade para se expressar, escrever com fluidez, contar histórias e ler nas entrelinhas. Tem forte capacidade de comunicação oral e escrita, sensibilizando e transmitindo ideias com alta precisão e clareza.",
+      courses: ["Letras", "Jornalismo", "Marketing", "Relações Públicas", "Pedagogia", "Publicidade e Propaganda"]
+    },
+    corporal: {
+      name: "Corporal-Cinestésica",
+      shortName: "Corporal",
+      icon: "🏃",
+      description: "Seu corpo fala e se expressa com maestria! Você tem excelente coordenação motora, agilidade e facilidade para realizar tarefas práticas, manuais ou dinâmicas. Gosta de movimento físico, aventuras e de utilizar o corpo de maneira integrada para expressar suas emoções.",
+      courses: ["Educação Física", "Fisioterapia", "Estética e Cosmética", "Teatro e Artes Cênicas", "Logística"]
+    },
+    logico_matematica: {
+      name: "Lógico-Matemática",
+      shortName: "Lógico",
+      icon: "📊",
+      description: "Sua mente é uma máquina de raciocínio estruturado! Você tem extrema facilidade para lidar com números, dados, planilhas e resolver problemas lógicos complexos. Gosta de sistematizar padrões, buscar evidências concretas e fundamentar suas opiniões em argumentos sólidos.",
+      courses: ["Análise e Desenvolvimento de Sistemas", "Ciências da Computação", "Engenharia de Produção", "Ciências Contábeis", "Administração de Empresas", "Gestão de TI"]
+    },
+    espacial: {
+      name: "Espacial",
+      shortName: "Espacial",
+      icon: "🎨",
+      description: "Seu campo de visão é tridimensional e altamente criativo! Você possui uma incrível habilidade para projetar layouts, cenários, imagens e correlacionar cores e emoções. Consegue visualizar projetos completos mentalmente e valoriza profundamente a estética dos detalhes.",
+      courses: ["Design Gráfico", "Arquitetura e Urbanismo", "Web Design", "Marketing Digital", "Edição de Vídeo", "Jogos Digitais"]
+    }
+  };
+
+  // Group mappings of questions by category to ensure correct mathematical calculations
+  const categoryQuestions = {
+    interpessoal: [1, 18, 19, 20, 22, 28],
+    corporal: [2, 15, 23],
+    intrapessoal: [3, 8, 11, 26],
+    naturalista: [4, 14, 32],
+    musical: [5, 7, 10, 31],
+    linguistica: [6, 13, 17, 30],
+    logico_matematica: [9, 12, 25, 27],
+    espacial: [16, 21, 24, 29]
+  };
+
   // State Variables
-  let currentStep = 0; // 0 to 7: Questions, 8: Lead Form, 9: Loading, 10: Result
-  let userResponses = {};
-  let recognition = null;
-  let isRecording = false;
-  let generatedResultText = "";
+  let currentStep = 0; // 0 to 31: Questions, 32: Lead Form, 33: Loading, 34: Results
+  let userResponses = {}; // keys: question index (0-31), value: 1 to 4
+  let calculatedPercentages = {};
+  let topIntelligence = "";
 
   // Core DOM Initialization
   function init() {
@@ -97,85 +132,9 @@
     if (triggerBtn) {
       triggerBtn.addEventListener("click", openModal);
     }
-    setupSpeechRecognition();
   }
 
-  // Speech Recognition Setup
-  function setupSpeechRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.lang = "pt-BR";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onstart = function () {
-        isRecording = true;
-        updateRecordButtonUI(true);
-      };
-
-      recognition.onend = function () {
-        isRecording = false;
-        updateRecordButtonUI(false);
-      };
-
-      recognition.onerror = function (event) {
-        console.error("Speech recognition error:", event.error);
-        isRecording = false;
-        updateRecordButtonUI(false);
-        showToast("⚠️ Ops! Não consegui ouvir bem. Pode tentar falar de novo?");
-      };
-
-      recognition.onresult = function (event) {
-        const textResult = event.results[0][0].transcript;
-        const textarea = document.getElementById("vt-answer-text");
-        if (textarea && textResult) {
-          if (textarea.value.trim() !== "") {
-            textarea.value += " " + textResult;
-          } else {
-            textarea.value = textResult;
-          }
-          // Trigger input event to validate button
-          textarea.dispatchEvent(new Event("input"));
-        }
-      };
-    }
-  }
-
-  function updateRecordButtonUI(recording) {
-    const recordBtn = document.getElementById("vt-btn-record");
-    if (!recordBtn) return;
-    
-    if (recording) {
-      recordBtn.classList.add("recording");
-      recordBtn.innerHTML = `
-        <span class="vt-record-dot"></span>
-        <span>Gravando... Clique para parar</span>
-      `;
-    } else {
-      recordBtn.classList.remove("recording");
-      recordBtn.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="22"/>
-        </svg>
-        <span>Gravar por Voz (Falar)</span>
-      `;
-    }
-  }
-
-  function toggleRecording() {
-    if (!recognition) return;
-    if (isRecording) {
-      recognition.stop();
-    } else {
-      recognition.start();
-    }
-  }
-
-  // Open and Close Modal
+  // Open Modal
   function openModal() {
     // Check if modal already exists, remove it
     const existing = document.getElementById("vt-modal-overlay");
@@ -189,7 +148,7 @@
     overlay.innerHTML = `
       <div class="vt-modal-container" id="vt-modal-container">
         <div class="vt-modal-header">
-          <h3>Orientador Profissional EADon</h3>
+          <h3>Orientador Vocacional - Múltiplas Inteligências</h3>
           <button class="vt-modal-close-btn" id="vt-modal-close" aria-label="Fechar modal">×</button>
         </div>
         <div class="vt-modal-body" id="vt-modal-body">
@@ -203,7 +162,7 @@
 
     document.body.appendChild(overlay);
 
-    // Trigger transitions
+    // Trigger active state transition
     setTimeout(() => {
       overlay.classList.add("active");
     }, 10);
@@ -217,16 +176,21 @@
     // Reset State & Render first question
     currentStep = 0;
     userResponses = {};
+    calculatedPercentages = {};
+    topIntelligence = "";
+    
+    // Reset modal size
+    const container = document.getElementById("vt-modal-container");
+    if (container) {
+      container.classList.remove("vt-modal-expanded");
+    }
+
     renderCurrentStep();
   }
 
   function closeModal() {
     const overlay = document.getElementById("vt-modal-overlay");
     if (!overlay) return;
-    
-    if (isRecording && recognition) {
-      recognition.stop();
-    }
     
     overlay.classList.remove("active");
     setTimeout(() => {
@@ -238,22 +202,25 @@
   function renderCurrentStep() {
     const body = document.getElementById("vt-modal-body");
     const footer = document.getElementById("vt-modal-footer");
+    const container = document.getElementById("vt-modal-container");
     if (!body || !footer) return;
 
     // Clear contents
     body.innerHTML = "";
     footer.innerHTML = "";
 
-    // Step 0-7: Questions
-    if (currentStep >= 0 && currentStep < 8) {
-      const q = questions[currentStep];
-      const progressPercent = Math.round((currentStep / 8) * 100);
+    // Step 0-31: 32 Objective Questions
+    if (currentStep >= 0 && currentStep < 32) {
+      if (container) container.classList.remove("vt-modal-expanded");
 
-      // Question body
-      const questionHTML = `
+      const q = questions[currentStep];
+      const progressPercent = Math.round((currentStep / 32) * 100);
+
+      // Render Question Layout
+      body.innerHTML = `
         <div class="vt-progress-wrapper">
           <div class="vt-progress-info">
-            <span class="vt-progress-text">Pergunta ${currentStep + 1} de 8</span>
+            <span class="vt-progress-text">Afirmação ${currentStep + 1} de 32</span>
             <span class="vt-progress-text">${progressPercent}% completo</span>
           </div>
           <div class="vt-progress-bar-bg">
@@ -262,90 +229,59 @@
         </div>
         
         <div class="vt-question-container">
-          <h4 class="vt-question-title">
-            <span class="vt-question-icon">⚡</span>
-            <span>${q.question}</span>
+          <p class="vt-question-instruction">Avalie o quanto você se identifica com a afirmação abaixo:</p>
+          <h4 class="vt-question-title-objective">
+            "${q.text}"
           </h4>
           
-          ${
-            q.type === "text"
-              ? `
-            <div class="vt-textarea-wrapper">
-              <textarea id="vt-answer-text" class="vt-textarea" placeholder="${q.placeholder}"></textarea>
-            </div>
-            ${
-              recognition
-                ? `<button id="vt-btn-record" class="vt-record-btn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                      <line x1="12" y1="19" x2="12" y2="22"/>
-                    </svg>
-                    <span>Gravar por Voz (Falar)</span>
-                  </button>
-                  <p class="vt-record-indicator" style="display: none;"></p>
-                  `
-                : `<p class="vt-unsupported-speech-msg">🎙️ Gravação por voz disponível em navegadores modernos como Google Chrome.</p>`
-            }
-            <p style="font-size: 12px; color: #97A0B6; margin: 8px 0 0 0; text-align: left;">${q.voiceHelp || ""}</p>
-          `
-              : `
-            <div class="vt-options-list">
-              ${q.options
-                .map(
-                  (opt, idx) => `
-                <div class="vt-option-card" data-val="${opt.value}">
-                  <span class="vt-option-radio"></span>
-                  <span class="vt-option-label">${opt.label}</span>
-                </div>
-              `
-                )
-                .join("")}
-            </div>
-          `
-          }
+          <div class="vt-scale-options">
+            <button class="vt-scale-btn" data-val="4">
+              <span class="vt-scale-number vt-scale-num-4">4</span>
+              <span class="vt-scale-text">Concordo plenamente</span>
+            </button>
+            <button class="vt-scale-btn" data-val="3">
+              <span class="vt-scale-number vt-scale-num-3">3</span>
+              <span class="vt-scale-text">Concordo</span>
+            </button>
+            <button class="vt-scale-btn" data-val="2">
+              <span class="vt-scale-number vt-scale-num-2">2</span>
+              <span class="vt-scale-text">Concordo parcialmente</span>
+            </button>
+            <button class="vt-scale-btn" data-val="1">
+              <span class="vt-scale-number vt-scale-num-1">1</span>
+              <span class="vt-scale-text">Não concordo</span>
+            </button>
+          </div>
         </div>
       `;
 
-      body.innerHTML = questionHTML;
-
       // Restore previously saved answer if back button used
-      const existingVal = userResponses[q.id];
-      if (existingVal) {
-        if (q.type === "text") {
-          document.getElementById("vt-answer-text").value = existingVal;
-        } else {
-          const cards = body.querySelectorAll(".vt-option-card");
-          cards.forEach((c) => {
-            if (c.getAttribute("data-val") === existingVal) {
-              c.classList.add("selected");
-            }
-          });
-        }
+      const savedAnswer = userResponses[currentStep];
+      if (savedAnswer) {
+        const activeBtn = body.querySelector(`.vt-scale-btn[data-val="${savedAnswer}"]`);
+        if (activeBtn) activeBtn.classList.add("selected");
       }
 
-      // Add event listeners inside the question
-      if (q.type === "text") {
-        const textarea = document.getElementById("vt-answer-text");
-        textarea.focus();
-        textarea.addEventListener("input", function () {
-          validateQuestionInput();
+      // Add Zero-Friction Click Action to scale buttons
+      const buttons = body.querySelectorAll(".vt-scale-btn");
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", function () {
+          buttons.forEach((b) => b.classList.remove("selected"));
+          this.classList.add("selected");
+          
+          const val = parseInt(this.getAttribute("data-val"));
+          userResponses[currentStep] = val;
+
+          // Enable next button immediately
+          const nextBtn = document.getElementById("vt-btn-next");
+          if (nextBtn) nextBtn.disabled = false;
+
+          // Auto-advance after a visual feedback delay (200ms)
+          setTimeout(() => {
+            handleNextStep();
+          }, 200);
         });
-        
-        const recordBtn = document.getElementById("vt-btn-record");
-        if (recordBtn) {
-          recordBtn.addEventListener("click", toggleRecording);
-        }
-      } else {
-        const cards = body.querySelectorAll(".vt-option-card");
-        cards.forEach((c) => {
-          c.addEventListener("click", function () {
-            cards.forEach((x) => x.classList.remove("selected"));
-            this.classList.add("selected");
-            validateQuestionInput();
-          });
-        });
-      }
+      });
 
       // Footer Navigation buttons
       footer.innerHTML = `
@@ -357,7 +293,7 @@
                </button>`
             : ""
         }
-        <button class="vt-btn vt-btn-primary" id="vt-btn-next" disabled>
+        <button class="vt-btn vt-btn-primary" id="vt-btn-next" ${savedAnswer ? "" : "disabled"}>
           <span>Avançar</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </button>
@@ -367,17 +303,16 @@
       
       const backBtn = document.getElementById("vt-btn-back");
       if (backBtn) backBtn.addEventListener("click", handleBackStep);
-
-      // Trigger initial validation check
-      validateQuestionInput();
     } 
-    // Step 8: Lead Capture Form
-    else if (currentStep === 8) {
+    // Step 32: Lead Capture Form (Nome, WhatsApp, Idade)
+    else if (currentStep === 32) {
+      if (container) container.classList.remove("vt-modal-expanded");
+
       body.innerHTML = `
         <div class="vt-progress-wrapper">
           <div class="vt-progress-info">
-            <span class="vt-progress-text">Quase lá! 🎯</span>
-            <span class="vt-progress-text">100% das perguntas respondidas</span>
+            <span class="vt-progress-text">Quase pronto! 🎯</span>
+            <span class="vt-progress-text">100% das afirmações concluídas</span>
           </div>
           <div class="vt-progress-bar-bg">
             <div class="vt-progress-bar-fill" style="width: 100%"></div>
@@ -385,25 +320,26 @@
         </div>
 
         <div class="vt-question-container" style="text-align: center;">
-          <div style="font-size: 40px; margin-bottom: 16px;">🏆</div>
-          <h4 style="font-family: 'Work Sans', sans-serif; font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">Perguntas Concluídas!</h4>
+          <div class="vt-lead-header-icon">🏆</div>
+          <h4 style="font-family: 'Work Sans', sans-serif; font-size: 20px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px;">Mapeamento Concluído!</h4>
           <p style="font-family: 'Work Sans', sans-serif; font-size: 14px; color: #B7C3D3; margin-bottom: 24px; line-height: 1.5;">
-            Nossa Inteligência Artificial já está pronta para processar as suas respostas e sugerir a sua profissão ideal. 
-            Preencha seus dados de contato abaixo para liberar seu relatório vocacional completo!
+            Calculamos com sucesso suas afinidades intelectuais. Preencha seus dados de contato abaixo para visualizar seu gráfico de resultados e recomendações de cursos!
           </p>
 
-          <form id="vt-lead-form">
+          <form id="vt-lead-form" onsubmit="return false;">
             <div class="vt-form-group">
-              <label for="vt-lead-name">Seu Nome Completo *</label>
+              <label for="vt-lead-name">Nome Completo *</label>
               <input type="text" id="vt-lead-name" class="vt-input" placeholder="Ex: Ailton Santos" required />
             </div>
-            <div class="vt-form-group">
-              <label for="vt-lead-whatsapp">Seu WhatsApp (com DDD) *</label>
-              <input type="tel" id="vt-lead-whatsapp" class="vt-input" placeholder="Ex: (11) 99999-9999" required />
-            </div>
-            <div class="vt-form-group">
-              <label for="vt-lead-email">Seu Melhor E-mail *</label>
-              <input type="email" id="vt-lead-email" class="vt-input" placeholder="Ex: ailton@email.com" required />
+            <div class="vt-form-row">
+              <div class="vt-form-group vt-flex-2">
+                <label for="vt-lead-whatsapp">WhatsApp (com DDD) *</label>
+                <input type="tel" id="vt-lead-whatsapp" class="vt-input" placeholder="Ex: (11) 99999-9999" required />
+              </div>
+              <div class="vt-form-group vt-flex-1">
+                <label for="vt-lead-age">Idade *</label>
+                <input type="number" id="vt-lead-age" class="vt-input" placeholder="Ex: 22" min="10" max="100" required />
+              </div>
             </div>
           </form>
         </div>
@@ -419,15 +355,18 @@
         });
       }
 
-      document.getElementById("vt-lead-name").addEventListener("input", validateLeadForm);
-      document.getElementById("vt-lead-email").addEventListener("input", validateLeadForm);
+      const nameInput = document.getElementById("vt-lead-name");
+      const ageInput = document.getElementById("vt-lead-age");
+
+      nameInput.addEventListener("input", validateLeadForm);
+      ageInput.addEventListener("input", validateLeadForm);
 
       footer.innerHTML = `
         <button class="vt-btn vt-btn-secondary" id="vt-btn-back">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
           <span>Voltar</span>
         </button>
-        <button class="vt-btn vt-btn-primary" id="vt-btn-submit-lead" disabled style="background-image: linear-gradient(180deg, #FF9901 0%, #EDA842 100%); box-shadow: 0 4px 15px rgba(243, 118, 16, 0.2);">
+        <button class="vt-btn vt-btn-primary" id="vt-btn-submit-lead" disabled style="background-image: linear-gradient(180deg, #F37610 0%, #FF9901 100%); box-shadow: 0 4px 15px rgba(243, 118, 16, 0.2);">
           <span>Liberar Meu Resultado ✨</span>
         </button>
       `;
@@ -435,504 +374,369 @@
       document.getElementById("vt-btn-submit-lead").addEventListener("click", handleSubmitLead);
       document.getElementById("vt-btn-back").addEventListener("click", handleBackStep);
     }
-    // Step 9: Loading Screen
-    else if (currentStep === 9) {
+    // Step 33: Loading / Mathematical Calculation
+    else if (currentStep === 33) {
+      if (container) container.classList.remove("vt-modal-expanded");
+
       body.innerHTML = `
         <div class="vt-loader-container">
           <div class="vt-spinner"></div>
-          <h4 class="vt-loader-title">Analisando Perfil Vocacional</h4>
-          <p class="vt-loader-text" id="vt-loader-msg">Processando suas respostas no cérebro artificial...</p>
+          <h4 class="vt-loader-title">Processando Perfil Vocacional</h4>
+          <p class="vt-loader-text" id="vt-loader-msg">Sumarizando pontos de respostas...</p>
         </div>
       `;
-      // No buttons in footer during loading
       footer.innerHTML = "";
 
-      // Start messages rotation and run AI API call
       startLoaderMessages();
-      runAIVocationalAnalysis();
+      
+      // Calculate results and advance after 1.8 seconds to feel premium & authentic
+      setTimeout(() => {
+        calculateMathematicalResults();
+        saveAndTransitionToResults();
+      }, 1800);
     }
-    // Step 10: AI Result Screen
-    else if (currentStep === 10) {
-      // Format response text with a clean custom parser
-      const formattedHTML = formatAIResultToHTML(generatedResultText);
+    // Step 34: Premium Results Screen
+    else if (currentStep === 34) {
+      if (container) container.classList.add("vt-modal-expanded");
+
+      // Find top intelligence
+      const topDetail = intelligencesDetails[topIntelligence];
+
+      // Build Bars HTML for the chart
+      let chartBarsHTML = "";
+      Object.keys(categoryQuestions).forEach((cat) => {
+        const pct = calculatedPercentages[cat];
+        const detail = intelligencesDetails[cat];
+        const isTop = cat === topIntelligence;
+        
+        chartBarsHTML += `
+          <div class="vt-chart-bar-wrapper ${isTop ? "is-top-intelligence" : ""}">
+            <div class="vt-chart-bar-pct-bubble">${pct}%</div>
+            <div class="vt-chart-bar-outer">
+              <div class="vt-chart-bar-inner" style="height: ${pct}%"></div>
+            </div>
+            <div class="vt-chart-bar-icon-small">${detail.icon}</div>
+            <div class="vt-chart-bar-label-small">${detail.shortName}</div>
+          </div>
+        `;
+      });
+
+      // Build Accordions HTML for all other intelligences
+      let accordionsHTML = "";
+      Object.keys(intelligencesDetails).forEach((cat) => {
+        if (cat === topIntelligence) return; // Skip top intelligence (shown in main highlight)
+
+        const pct = calculatedPercentages[cat];
+        const detail = intelligencesDetails[cat];
+
+        accordionsHTML += `
+          <div class="vt-accordion-item">
+            <button class="vt-accordion-header">
+              <span class="vt-accordion-header-left">
+                <span class="vt-accordion-icon-large">${detail.icon}</span>
+                <span class="vt-accordion-title-name">${detail.name}</span>
+              </span>
+              <span class="vt-accordion-header-right">
+                <span class="vt-accordion-badge">${pct}%</span>
+                <svg class="vt-accordion-arrow-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="vt-accordion-content">
+              <p class="vt-accordion-desc-text">${detail.description}</p>
+              <div class="vt-courses-box">
+                <h6>📚 Cursos Recomendados no EADon:</h6>
+                <div class="vt-courses-tags">
+                  ${detail.courses.map(course => `<span class="vt-course-tag">${course}</span>`).join("")}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
 
       body.innerHTML = `
-        <div class="vt-result-container">
-          <div class="vt-result-card">
-            <div class="vt-result-header">
-              <div class="vt-result-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                  <path d="m9 12 2 2 4-4"/>
-                </svg>
+        <div class="vt-result-premium-container">
+          <!-- Top Orange Banner -->
+          <div class="vt-result-top-banner-premium">
+            <h4>Já temos o resultado do seu teste!</h4>
+            <p>Confira o seu perfil de Múltiplas Inteligências</p>
+          </div>
+
+          <!-- Vertical Bar Chart -->
+          <div class="vt-chart-block">
+            <h5>Gráfico de Inteligências Predominantes:</h5>
+            <div class="vt-chart-container">
+              <div class="vt-chart-bars-row">
+                ${chartBarsHTML}
               </div>
+            </div>
+          </div>
+
+          <!-- Predominant / Highest Score Highlight -->
+          <div class="vt-predominant-card">
+            <div class="vt-predominant-badge">🔥 Inteligência Predominante</div>
+            <div class="vt-predominant-header">
+              <div class="vt-predominant-icon-big">${topDetail.icon}</div>
               <div>
-                <h4>Seu Resultado Vocacional</h4>
-                <p>Análise de Perfil Inteligente (Gemini 1.5 Flash)</p>
+                <h4 class="vt-predominant-title">${topDetail.name}</h4>
+                <p class="vt-predominant-subtitle">Sua pontuação: <strong>${calculatedPercentages[topIntelligence]}%</strong></p>
               </div>
             </div>
             
-            <div class="vt-result-content">
-              ${formattedHTML}
+            <p class="vt-predominant-desc-text">
+              ${topDetail.description}
+            </p>
+
+            <div class="vt-courses-box-top">
+              <h6>🎯 Melhores Cursos recomendados para você no EADon:</h6>
+              <div class="vt-courses-tags">
+                ${topDetail.courses.map(course => `<span class="vt-course-tag-top">${course}</span>`).join("")}
+              </div>
+            </div>
+
+            <!-- WhatsApp Engagement CTA -->
+            <div class="vt-whatsapp-engagement-box">
+              <div class="vt-whatsapp-header">
+                <span class="vt-whatsapp-badge-icon">💬</span>
+                <div>
+                  <h6>Garantir Bolsa com Orientador EADon</h6>
+                  <p>Fale grátis com nosso consultor no WhatsApp e garanta uma bolsa de estudo exclusiva para o seu perfil!</p>
+                </div>
+              </div>
+              <button class="vt-btn-whatsapp-premium" id="vt-btn-whatsapp-consultor">
+                <span>Garantir Bolsa no WhatsApp</span>
+              </button>
             </div>
           </div>
 
-          <!-- Explore Recommended Courses directly in WhatsApp! -->
-          <div class="vt-whatsapp-cta-card">
-            <div class="vt-whatsapp-icon-wrapper">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-              </svg>
-            </div>
-            <div>
-              <h5>Falar com um Orientador no WhatsApp</h5>
-              <p>Que tal receber uma recomendação direta dos melhores cursos com bolsas de estudo do EADon de acordo com o seu perfil?</p>
-              <button class="vt-btn-whatsapp" id="vt-btn-whatsapp-consultor">
-                <span>Conversar via WhatsApp</span>
-              </button>
+          <!-- Accordion of remaining intelligences -->
+          <div class="vt-accordions-block">
+            <h5>Explorar Outras Inteligências:</h5>
+            <div class="vt-accordions-list">
+              ${accordionsHTML}
             </div>
           </div>
         </div>
       `;
 
-      // Copy result button and finish button in footer
+      // Set up Accordion expand/collapse click behavior
+      const accordionHeaders = body.querySelectorAll(".vt-accordion-header");
+      accordionHeaders.forEach((header) => {
+        header.addEventListener("click", function () {
+          const item = this.parentElement;
+          const isActive = item.classList.contains("active");
+          
+          // Collapse all others
+          body.querySelectorAll(".vt-accordion-item").forEach((it) => {
+            it.classList.remove("active");
+          });
+
+          // Toggle clicked one
+          if (!isActive) {
+            item.classList.add("active");
+          }
+        });
+      });
+
+      // Primary CTA redirects to courses portal
       footer.innerHTML = `
-        <button class="vt-btn vt-btn-secondary" id="vt-btn-copy-result">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2.9.9 2 2"/>
-          </svg>
+        <button class="vt-btn vt-btn-secondary" id="vt-btn-copy-result-text">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           <span>Copiar Relatório</span>
         </button>
-        <button class="vt-btn vt-btn-primary" id="vt-btn-finish">
-          <span>Concluir Teste</span>
+        <button class="vt-btn vt-btn-primary" id="vt-btn-access-portal" style="background-image: linear-gradient(180deg, #F37610 0%, #FF9901 100%); box-shadow: 0 4px 15px rgba(243, 118, 16, 0.3);">
+          <span>Acessar o portal dos cursos</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </button>
       `;
 
+      // Event listeners for results screen
       document.getElementById("vt-btn-whatsapp-consultor").addEventListener("click", handleWhatsAppRedirect);
-      document.getElementById("vt-btn-copy-result").addEventListener("click", copyResultToClipboard);
-      document.getElementById("vt-btn-finish").addEventListener("click", closeModal);
+      document.getElementById("vt-btn-copy-result-text").addEventListener("click", copyResultToClipboard);
+      
+      document.getElementById("vt-btn-access-portal").addEventListener("click", function () {
+        // Redirect to EADon courses portal in new tab
+        window.open("https://eadon.com.br/inoveead", "_blank");
+        closeModal();
+      });
     }
   }
 
-  // Validator Helpers
-  function validateQuestionInput() {
-    const q = questions[currentStep];
-    const nextBtn = document.getElementById("vt-btn-next");
-    if (!nextBtn) return;
-
-    let isValid = false;
-
-    if (q.type === "text") {
-      const val = document.getElementById("vt-answer-text").value.trim();
-      isValid = val.length >= 3;
-    } else {
-      const selected = document.querySelector(".vt-option-card.selected");
-      isValid = selected !== null;
-    }
-
-    nextBtn.disabled = !isValid;
-  }
-
+  // Input Validator helpers
   function validateLeadForm() {
     const name = document.getElementById("vt-lead-name").value.trim();
     const whatsapp = document.getElementById("vt-lead-whatsapp").value.trim();
-    const email = document.getElementById("vt-lead-email").value.trim();
+    const ageVal = document.getElementById("vt-lead-age").value.trim();
     const submitBtn = document.getElementById("vt-btn-submit-lead");
     
     if (!submitBtn) return;
 
-    // Very simple validations
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const isEmailValid = emailRegex.test(email);
     const isNameValid = name.length >= 3;
-    const isPhoneValid = whatsapp.replace(/\D/g, '').length >= 10; // At least 10 digits
+    const isPhoneValid = whatsapp.replace(/\D/g, '').length >= 10;
+    const age = parseInt(ageVal);
+    const isAgeValid = !isNaN(age) && age >= 10 && age <= 100;
 
-    submitBtn.disabled = !(isEmailValid && isNameValid && isPhoneValid);
+    submitBtn.disabled = !(isNameValid && isPhoneValid && isAgeValid);
   }
 
-  // Navigation Handlers
+  // Navigation handlers
   function handleNextStep() {
-    const q = questions[currentStep];
-    if (q.type === "text") {
-      userResponses[q.id] = document.getElementById("vt-answer-text").value.trim();
-    } else {
-      const selected = document.querySelector(".vt-option-card.selected");
-      userResponses[q.id] = selected.getAttribute("data-val");
+    if (currentStep < 32) {
+      currentStep++;
+      renderCurrentStep();
     }
-
-    if (isRecording && recognition) {
-      recognition.stop();
-    }
-
-    // Go to next step (leads page after Q8)
-    currentStep++;
-    renderCurrentStep();
   }
 
   function handleBackStep() {
-    if (isRecording && recognition) {
-      recognition.stop();
+    if (currentStep > 0) {
+      currentStep--;
+      renderCurrentStep();
     }
-
-    currentStep--;
-    renderCurrentStep();
   }
 
   function startLoaderMessages() {
     const messages = [
-      "Consultando o cérebro artificial do Google...",
-      "Processando seu estilo de trabalho ideal...",
-      "Analisando seus interesses e habilidades...",
-      "Cruzando dados com oportunidades do mercado EAD...",
-      "Elaborando o relatório final personalizado..."
+      "Processando pontuações lógicas...",
+      "Mapeando perfil de comunicação...",
+      "Identificando inteligência de empatia...",
+      "Calculando gráficos estatísticos..."
     ];
     let msgIndex = 0;
     
     const interval = setInterval(() => {
       const loaderMsg = document.getElementById("vt-loader-msg");
-      if (loaderMsg && currentStep === 9) {
+      if (loaderMsg && currentStep === 33) {
         loaderMsg.textContent = messages[msgIndex];
         msgIndex = (msgIndex + 1) % messages.length;
       } else {
         clearInterval(interval);
       }
-    }, 2500);
+    }, 450);
   }
 
-  // Submit Lead data to Google Sheets (using Webhook)
+  // Submit Lead triggers transition to loading step
   function handleSubmitLead() {
     const name = document.getElementById("vt-lead-name").value.trim();
     const whatsapp = document.getElementById("vt-lead-whatsapp").value.trim();
-    const email = document.getElementById("vt-lead-email").value.trim();
+    const age = document.getElementById("vt-lead-age").value.trim();
 
     userResponses["lead_name"] = name;
     userResponses["lead_whatsapp"] = whatsapp;
-    userResponses["lead_email"] = email;
+    userResponses["lead_age"] = age;
 
-    // Go to loading step
-    currentStep = 9;
+    currentStep = 33;
     renderCurrentStep();
   }
 
-  // Call Gemini REST API directly with automatic Local AI Fallback Engine
-  async function runAIVocationalAnalysis() {
+  // Mathematical Gardner Multiple Intelligences Profiling
+  function calculateMathematicalResults() {
+    const scores = {};
+    
+    Object.keys(categoryQuestions).forEach((cat) => {
+      const qIds = categoryQuestions[cat];
+      let sum = 0;
+      qIds.forEach((id) => {
+        // userResponses is indexed 0 to 31. The id in database is 1 to 32.
+        const ans = parseInt(userResponses[id - 1] || 1);
+        sum += ans;
+      });
+      const N = qIds.length;
+      // Normalization formula: ((Sum - N) / (3N)) * 100
+      const pct = Math.round(((sum - N) / (3 * N)) * 100);
+      scores[cat] = sum;
+      calculatedPercentages[cat] = pct;
+    });
+
+    // Find the intelligence with the absolute highest percentage
+    let maxCat = "logico_matematica";
+    let maxVal = -1;
+    Object.keys(calculatedPercentages).forEach((cat) => {
+      if (calculatedPercentages[cat] > maxVal) {
+        maxVal = calculatedPercentages[cat];
+        maxCat = cat;
+      }
+    });
+
+    topIntelligence = maxCat;
+  }
+
+  // Save data to localStorage/Webhook and transition to step 34
+  async function saveAndTransitionToResults() {
     try {
-      // Build responses summary for prompt
-      const summary = `
-        Nome do Estudante: ${userResponses.lead_name}
-        1. Tempo livre: ${userResponses.tempoLivre}
-        2. Ambiente de trabalho: ${userResponses.ambiente}
-        3. Habilidades/Interesses na escola: ${userResponses.habilidades}
-        4. Estilo de trabalho: ${userResponses.estilo}
-        5. Profissional admirado: ${userResponses.admiracao}
-        6. Resolução de desafios: ${userResponses.desafio}
-        7. Projeto/Negócio dos sonhos: ${userResponses.criacao}
-        8. Principal objetivo: ${userResponses.objetivo}
-      `;
+      const name = userResponses.lead_name || "Estudante";
+      const whatsapp = userResponses.lead_whatsapp || "";
+      const age = userResponses.lead_age || "";
+      const topDetail = intelligencesDetails[topIntelligence];
 
-      const systemPrompt = `
-Você é o "Orientador Profissional EADon", um mentor de carreiras focado em educação digital. Analise o perfil vocacional do estudante abaixo com empatia, clareza e autoridade. Seu objetivo é sugerir exatamente 3 caminhos de carreiras ideais para ele.
+      // Formulate simple text report for backup / webhook
+      let summaryText = `Resultados Vocacionais:\n`;
+      Object.keys(calculatedPercentages).forEach((cat) => {
+        summaryText += `- ${intelligencesDetails[cat].name}: ${calculatedPercentages[cat]}%\n`;
+      });
 
-Sua resposta deve ser estruturada e formatada em Markdown simples contendo:
-1. **Introdução**: Uma análise inspiradora de 2 a 3 frases sobre as competências e forças do perfil dele de acordo com as respostas.
-2. **Caminhos Sugeridos**: Apresente exatamente 3 caminhos sugeridos. Para cada caminho, use obrigatoriamente a sintaxe:
-"## 🎯 Caminho X: [Nome da Área/Carreira]"
-Seguido por um pequeno parágrafo explicando o porquê essa área combina com ele e listando competências a desenvolver.
-3. **Conclusão**: Uma mensagem final de incentivo à profissionalização.
-
-Mantenha a resposta focada, concisa e altamente motivadora. Não use termos complexos. Fale em português do Brasil.
-      `;
-
-      const requestBody = {
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: `${systemPrompt}\n\nRespostas do Aluno:\n${summary}` }]
-          }
-        ]
+      const leadData = {
+        name: name,
+        whatsapp: whatsapp,
+        age: age,
+        result_interpessoal: calculatedPercentages.interpessoal + "%",
+        result_corporal: calculatedPercentages.corporal + "%",
+        result_intrapessoal: calculatedPercentages.intrapessoal + "%",
+        result_naturalista: calculatedPercentages.naturalista + "%",
+        result_musical: calculatedPercentages.musical + "%",
+        result_linguistica: calculatedPercentages.linguistica + "%",
+        result_logico_matematica: calculatedPercentages.logico_matematica + "%",
+        result_espacial: calculatedPercentages.espacial + "%",
+        top_intelligence: topDetail.name,
+        timestamp: new Date().toISOString()
       };
 
-      let rawText = "";
-
+      // 1. Save locally to localStorage (key: eadon_leads)
+      let localLeads = [];
       try {
-        console.log("Attempting to request Google Gemini API...");
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-          {
+        const stored = localStorage.getItem("eadon_leads");
+        if (stored) localLeads = JSON.parse(stored);
+      } catch (e) {
+        console.error("Local storage read error", e);
+      }
+      localLeads.push(leadData);
+      localStorage.setItem("eadon_leads", JSON.stringify(localLeads));
+
+      // 2. Submit to Webhook if active
+      if (GOOGLE_SHEETS_WEBHOOK_URL && GOOGLE_SHEETS_WEBHOOK_URL.trim() !== "") {
+        try {
+          await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
             method: "POST",
+            mode: "no-cors",
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify(requestBody)
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`API returned HTTP ${response.status}`);
+            body: JSON.stringify(leadData)
+          });
+          console.log("Lead successfully submitted to sheets webhook.");
+        } catch (err) {
+          console.error("Failed to submit lead to Webhook:", err);
         }
-
-        const data = await response.json();
-        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
-          rawText = data.candidates[0].content.parts[0].text;
-          console.log("Gemini AI Analysis generated successfully.");
-        } else {
-          throw new Error("Invalid response format from Gemini API");
-        }
-      } catch (geminiError) {
-        console.warn("Gemini API Key blocked, leaked or offline. Activating EADon Local AI Fallback Engine...", geminiError);
-        // Generate a high-fidelity local vocational report dynamically
-        rawText = generateLocalVocationalAnalysis(userResponses);
       }
-      
-      generatedResultText = rawText;
-
-      // Save Lead Data + AI Result to Google Sheets AND localStorage!
-      await saveLeadAndResult(
-        userResponses.lead_name,
-        userResponses.lead_whatsapp,
-        userResponses.lead_email,
-        summary,
-        generatedResultText
-      );
-
-      // Render AI Result page
-      currentStep = 10;
-      renderCurrentStep();
-    } catch (error) {
-      console.error("General Analysis Error:", error);
-      showToast("❌ Erro ao gerar resultado. Tente novamente.");
-      // Back to lead step
-      currentStep = 8;
-      renderCurrentStep();
-    }
-  }
-
-  // Highly sophisticated localized AI Fallback Engine
-  function generateLocalVocationalAnalysis(responses) {
-    const name = responses.lead_name || "Estudante";
-    const ambiente = responses.ambiente || "escritorio";
-    const desafio = responses.desafio || "logica";
-    
-    // Decide the 3 paths based on responses
-    let path1 = "";
-    let path2 = "";
-    let path3 = "";
-    let intro = "";
-    let conclusion = "";
-    
-    if (ambiente === "escritorio") {
-      if (desafio === "logica") {
-        intro = `Olá, ${name}! Analisando o seu perfil, identificamos uma mente altamente analítica, focada em organização e solução estruturada de problemas. Você demonstra preferência por ambientes corporativos organizados ou home office focado, onde a clareza de processos e o raciocínio lógico estruturado são altamente valorizados.`;
-        
-        path1 = `## 🎯 Caminho 1: Tecnologia & Desenvolvimento de Software
-Seu raciocínio lógico estruturado e foco em resolver desafios complexos indicam uma excelente aptidão para a área de Tecnologia da Informação. Profissionais que trabalham focados na criação de códigos, lógica de dados e arquitetura de sistemas estão em alta demanda mundial.
-* **Competências a desenvolver**: Lógica de programação, desenvolvimento web/mobile e estruturas de banco de dados.`;
-        
-        path2 = `## 🎯 Caminho 2: Gestão Financeira & Business Intelligence (BI)
-Sua capacidade de trabalhar de forma organizada com processos lógicos faz de você um candidato ideal para planejar, gerenciar e analisar dados corporativos ou contábeis. A inteligência de negócios é a chave para a tomada de decisões hoje.
-* **Competências a desenvolver**: Análise estatística, ferramentas de BI (Power BI) e finanças corporativas.`;
-        
-        path3 = `## 🎯 Caminho 3: Administração & Processos Gerenciais
-A capacidade de gerenciar fluxos de trabalho de maneira eficiente, coordenando tarefas individuais ou em equipe com foco em metas organizacionais claras. A administração de recursos e a logística inteligente estruturam as grandes empresas.
-* **Competências a desenvolver**: Gestão estratégica, liderança operacional e otimização de processos.`;
-      } else { // criatividade
-        intro = `Olá, ${name}! Seu perfil destaca-se pela excelente inteligência criativa aplicada a ambientes estruturados. Você consegue unir a flexibilidade de ideias inovadoras à necessidade de foco operacional, gerando soluções fora da caixa que respeitam a ordem de projetos comerciais ou corporativos.`;
-        
-        path1 = `## 🎯 Caminho 1: Marketing Digital & Redação Publicitária
-A união de um ambiente flexível com a necessidade de ideias inovadoras torna você ideal para desenhar campanhas digitais, gerenciar redes sociais e criar narrativas envolventes para marcas na internet.
-* **Competências a desenvolver**: Estratégias de SEO, copywriting, análise de tráfego pago e branding.`;
-        
-        path2 = `## 🎯 Caminho 2: Design de Experiência (UX/UI) & Web Design
-A criação visual de interfaces, layouts e aplicativos web que facilitam a vida dos usuários. Uma profissão de alta remuneração que une bom gosto estético com organização de usabilidade prática.
-* **Competências a desenvolver**: Prototipagem (Figma), arquitetura de informação e usabilidade de produtos.`;
-        
-        path3 = `## 🎯 Caminho 3: Gestão de Projetos Criativos
-A liderança de equipes na execução de campanhas, produtos ou eventos criativos. Você consegue organizar a bagunça criativa de forma focada e produtiva, garantindo entregas incríveis no prazo.
-* **Competências a desenvolver**: Metodologias ágeis (Scrum), comunicação interpessoal e planejamento estratégico.`;
-      }
-    } else if (ambiente === "saude") {
-      intro = `Olá, ${name}! Seu perfil reflete uma profunda sensibilidade humanizada, empatia e dedicação ao bem-estar e saúde do próximo. Você se destaca pela capacidade de escuta ativa, cuidado prático e pela busca incessante de promover qualidade de vida e suporte direto à comunidade.`;
-      
-      path1 = `## 🎯 Caminho 1: Saúde Coletiva & Gestão Hospitalar
-Organização de políticas de saúde, bem-estar da comunidade ou gestão administrativa de clínicas e hospitais. Uma área ideal para coordenar equipes que promovem a saúde de milhares de pessoas com processos humanizados.
-* **Competências a desenvolver**: Legislação do SUS, liderança de equipes multidisciplinares e planejamento em saúde.`;
-      
-      path2 = `## 🎯 Caminho 2: Nutrição, Estética & Bem-estar
-Foco em orientar hábitos de vida saudáveis, alimentação preventiva ou cuidados corporais que aumentam a autoestima e a saúde física direta do paciente. Uma área em plena expansão clínica e digital.
-* **Competências a desenvolver**: Nutrologia aplicada, terapias integrativas e consultoria de bem-estar individualizado.`;
-      
-      path3 = `## 🎯 Caminho 3: Psicologia Organizacional & Recursos Humanos
-O cuidado com a saúde mental, motivação e desenvolvimento humano dentro de empresas e equipes. Você une sua vocação de suporte com a estrutura de organizações para melhorar a vida dos colaboradores.
-* **Competências a desenvolver**: Recrutamento humanizado, dinâmicas de engajamento e mediação de conflitos.`;
-    } else if (ambiente === "criativo") {
-      if (desafio === "logica") {
-        intro = `Olá, ${name}! Você possui um perfil técnico altamente focado na prática, engenhosidade e engenharia de soluções. Prefere atuar na linha de frente da criação física ou tecnológica, analisando engrenagens, estruturas e consertando ou otimizando sistemas lógicos no mundo material.`;
-        
-        path1 = `## 🎯 Caminho 1: Engenharia de Produção & Qualidade
-Organização de linhas de montagem, otimização de custos industriais e logística de suprimentos de forma eficiente. Ideal para quem quer ver os processos físicos acontecerem com perfeição e sem desperdícios.
-* **Competências a desenvolver**: Gestão lean (produção enxuta), controle estatístico de processos e segurança industrial.`;
-        
-        path2 = `## 🎯 Caminho 2: Infraestrutura de TI & Redes de Computadores
-O suporte técnico físico e digital a redes corporativas, servidores, segurança de hardware e conexão de sistemas integrados de alta complexidade.
-* **Competências a desenvolver**: Arquitetura de servidores, segurança da informação e protocolos de comunicação de dados.`;
-        
-        path3 = `## 🎯 Caminho 3: Gestão de Obras & Logística Integrada
-A distribuição inteligente de materiais e recursos físicos no tempo e espaço ideais. Uma área essencial para construtoras, grandes indústrias e portais de e-commerce globais de alta entrega.
-* **Competências a desenvolver**: Planejamento logístico internacional, gestão de frotas e gerenciamento de projetos.`;
-      } else { // criatividade
-        intro = `Olá, ${name}! Seu perfil transborda imaginação inovadora, habilidade visual e de design prático. Você tem a rara habilidade de visualizar projetos físicos ou visuais incríveis do zero, sabendo como transformar matérias-primas e ideias abstratas em obras de arte ou designs corporativos marcantes.`;
-        
-        path1 = `## 🎯 Caminho 1: Design Gráfico & Ilustração Digital
-Comunicação visual pura, criando identidades de marcas, logos, embalagens de produtos e materiais digitais de forte apelo visual e beleza estética incomparável.
-* **Competências a desenvolver**: Pacote Adobe (Illustrator, Photoshop), teoria das cores e tipografia aplicada.`;
-        
-        path2 = `## 🎯 Caminho 2: Arquitetura Comercial & Cenografia
-A criação de ambientes de lojas físicas, escritórios temáticos ou cenários digitais e reais que geram sensações únicas de imersão e compra nos clientes.
-* **Competências a desenvolver**: Modelagem 3D, ergonomia de espaços físicos e psicologia do consumo em ambientes.`;
-        
-        path3 = `## 🎯 Caminho 3: Produção de Mídia & Edição de Vídeo
-Transformar roteiros e captações brutas de vídeo em produtos audiovisuais dinâmicos para redes sociais, publicidade ou plataformas de educação digital como a EADon.
-* **Competências a desenvolver**: Softwares de edição (Premiere, After Effects), técnicas de storytelling e sonorização.`;
-      }
-    } else { // negocios
-      if (desafio === "logica") {
-        intro = `Olá, ${name}! Identificamos um perfil empreendedor estratégico, analítico e de forte liderança voltada para resultados financeiros. Você tem facilidade para enxergar oportunidades de mercado, ler dados estatísticos e negociar parcerias sólidas com foco em crescimento seguro.`;
-        
-        path1 = `## 🎯 Caminho 1: Gestão Comercial & Vendas B2B
-A estruturação de funis de vendas de alta performance, fechamento de grandes contratos comerciais corporativos e liderança de times de representantes de vendas.
-* **Competências a desenvolver**: Negociação avançada (método de Harvard), funis de vendas e gestão de relacionamento com clientes (CRM).`;
-        
-        path2 = `## 🎯 Caminho 2: Economia e Ciências Contábeis
-A saúde financeira de grandes marcas. Você ajuda a projetar lucros, otimizar impostos e garantir que a empresa cresça com máxima solidez financeira e legal.
-* **Competências a desenvolver**: Planejamento tributário, análise de demonstrativos financeiros e auditoria fiscal.`;
-        
-        path3 = `## 🎯 Caminho 3: Gestão de Startups & Modelagem de Negócios
-Transformar ideias disruptivas em negócios viáveis através de dados de mercado, planejando a tração de clientes e validando protótipos de produtos inovadores de forma rápida.
-* **Competências a desenvolver**: Lean Startup, métricas de crescimento (SaaS) e liderança de equipes ágeis.`;
-      } else { // criatividade
-        intro = `Olá, ${name}! Seu perfil destaca-se por uma carismática liderança comunicativa, empatia persuasiva e incrível capacidade de engajamento social. Você é movido pela conexão genuína com as pessoas, sabendo influenciar positivamente tomadas de decisão através de boas conversas.`;
-        
-        path1 = `## 🎯 Caminho 1: Relações Públicas & Assessoria de Imprensa
-Ser o porta-voz e gestor de imagem de grandes marcas, celebridades ou corporações, articulando com mídias e desenhando estratégias de reputação positivas.
-* **Competências a desenvolver**: Media training, gestão de crises reputacionais e comunicação corporativa interna.`;
-        
-        path2 = `## 🎯 Caminho 2: Influência Digital & Social Media Management
-A coordenação da presença digital de criadores de conteúdo e marcas, gerando autoridade em nichos específicos através de interações diárias inteligentes e conteúdo inovador.
-* **Competências a desenvolver**: Criação de calendários editoriais, análise de algoritmos de redes sociais e produção rápida de conteúdo (Reels/TikTok).`;
-        
-        path3 = `## 🎯 Caminho 3: Consultoria de Imagem, Sucesso do Cliente & CX
-Garantir a melhor experiência de pós-vendas, guiando e apoiando os clientes a atingirem o sucesso absoluto com o produto ou serviço adquirido da sua marca.
-* **Competências a desenvolver**: Comunicação empática, métricas de satisfação (NPS, Churn) e retenção estratégica.`;
-      }
-    }
-    
-    conclusion = `Parabéns pela conclusão do teste, ${name}! Este diagnóstico é o primeiro passo de uma jornada brilhante. No Portal EADon, temos uma variedade imensa de treinamentos reconhecidos no mercado prontos para alavancar sua carreira. Fale agora com nosso orientador no WhatsApp para garantir sua Bolsa de Estudo exclusiva nas carreiras indicadas para você! 🚀`;
-    
-    return `${intro}\n\n${path1}\n\n${path2}\n\n${path3}\n\n${conclusion}`;
-  }
-
-  // Save lead & AI output
-  async function saveLeadAndResult(name, whatsapp, email, summaryText, aiResult) {
-    const leadData = {
-      name: name,
-      whatsapp: whatsapp,
-      email: email,
-      responses: summaryText,
-      aiResult: aiResult,
-      timestamp: new Date().toISOString()
-    };
-
-    // 1. Save to LocalStorage always as a backup
-    let localLeads = [];
-    try {
-      const stored = localStorage.getItem("eadon_leads");
-      if (stored) localLeads = JSON.parse(stored);
     } catch (e) {
-      console.error("Local storage read error", e);
+      console.error("Error during save operation:", e);
     }
-    localLeads.push(leadData);
-    localStorage.setItem("eadon_leads", JSON.stringify(localLeads));
 
-    // 2. POST to Google Sheets Webhook if configured
-    if (GOOGLE_SHEETS_WEBHOOK_URL && GOOGLE_SHEETS_WEBHOOK_URL.trim() !== "") {
-      try {
-        // Use 'no-cors' mode as Google Apps Script redirect doesn't return CORS headers cleanly.
-        // It successfully executes the script on Google's side without failing the browser fetch.
-        await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(leadData)
-        });
-        console.log("Lead successfully submitted to Google Sheets Webhook.");
-      } catch (err) {
-        console.error("Failed to submit lead to Webhook:", err);
-      }
-    } else {
-      console.log("No Google Sheets Webhook configured. Saved locally only.");
-    }
+    // Go to Results screen
+    currentStep = 34;
+    renderCurrentStep();
   }
 
-  // Light Custom Markdown Parser for Beautiful HTML Display
-  function formatAIResultToHTML(text) {
-    if (!text) return "";
-    
-    // Clean and split lines
-    let html = text;
-
-    // Convert line breaks and escape some simple elements
-    html = html
-      .replace(/\r\n/g, "\n")
-      // Convert ## 🎯 Caminho X: Title to styled block titles
-      .replace(/##\s*🎯\s*(Caminho\s*\d+:\s*.+)/gi, '<h3 style="color: #00BF60; font-family:\'Work Sans\',sans-serif; font-size:18px; font-weight:700; margin-top:20px; border-left:3px solid #00BF60; padding-left:12px;">🎯 $1</h3>')
-      // Convert standard markdown bold **text** to strong
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Convert * list items to list
-      .replace(/^\s*\*\s*(.+)/gm, '<li>$1</li>')
-      // Wrap sequential <li> tags inside a <ul>
-      .replace(/(<li>.*?<\/li>)/gs, '<ul style="margin: 8px 0 16px 0; padding-left:20px;">$1</ul>')
-      // Convert paragraphs
-      .replace(/([^\n]+)/g, function(match) {
-        // Skip tags we just created
-        if (match.startsWith('<h3') || match.startsWith('<li') || match.startsWith('<ul')) {
-          return match;
-        }
-        return `<p style="margin-bottom:12px; line-height:1.6;">${match}</p>`;
-      });
-
-    return html;
-  }
-
-  // Extract suggested careers to prefill WhatsApp redirects
-  function extractSuggestedCareers(text) {
-    const regex = /##\s*🎯\s*Caminho\s*\d+:\s*(.+)/gi;
-    const paths = [];
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      paths.push(match[1].trim());
-    }
-    // If not matching standard format, try to find text lines with Caminho
-    if (paths.length === 0) {
-      const backupRegex = /Caminho\s*\d+:\s*(.+)/gi;
-      while ((match = backupRegex.exec(text)) !== null) {
-        paths.push(match[1].trim());
-      }
-    }
-    return paths.slice(0, 3); // Get up to 3 paths
-  }
-
-  // Handle WhatsApp Redirection to Consultant
+  // Handle WhatsApp Redirection to Sales Advisor
   function handleWhatsAppRedirect() {
     const name = userResponses.lead_name || "Estudante";
-    const careers = extractSuggestedCareers(generatedResultText);
-    const careersText = careers.length > 0 ? careers.join(", ") : "áreas recomendadas pela IA";
+    const topDetail = intelligencesDetails[topIntelligence];
+    const topVal = calculatedPercentages[topIntelligence];
 
-    const baseMessage = `Olá! Meu nome é ${name} e acabei de concluir o Teste Vocacional Inteligente no portal EADon! 🚀\n\nMinha análise indicou que as minhas áreas ideais são:\n👉 *${careersText}*\n\nGostaria de falar com um consultor para conhecer os cursos disponíveis nessas áreas e consultar valores de bolsas de estudo! 🎓`;
+    const baseMessage = `Olá! Meu nome é ${name} e acabei de concluir o Teste Vocacional das Múltiplas Inteligências no portal EADon! 🚀\n\nMinha inteligência predominante é:\n👉 *${topDetail.name}* com *${topVal}%* de afinidade!\n\nGostaria de falar com um consultor para conhecer os cursos sugeridos nessa área e resgatar minha Bolsa de Estudo exclusiva! 🎓`;
     
-    // Consultant WhatsApp phone number (using EADon's actual sales number)
+    // Sales consultant phone number
     const whatsappPhone = "5551997911411"; 
     const url = `https://api.whatsapp.com/send?phone=${whatsappPhone}&text=${encodeURIComponent(baseMessage)}`;
     
@@ -941,11 +745,30 @@ Garantir a melhor experiência de pós-vendas, guiando e apoiando os clientes a 
 
   // Copy result to Clipboard helper
   function copyResultToClipboard() {
-    const textToCopy = `RELATÓRIO VOCACIONAL EADON - IA\n\nEstudante: ${userResponses.lead_name}\nWhatsApp: ${userResponses.lead_whatsapp}\nE-mail: ${userResponses.lead_email}\n\n-- Análise da IA --\n\n${generatedResultText}`;
+    const name = userResponses.lead_name || "Estudante";
+    const whatsapp = userResponses.lead_whatsapp || "";
+    const age = userResponses.lead_age || "";
+    
+    let textToCopy = `RELATÓRIO VOCACIONAL EADON - MÚLTIPLAS INTELIGÊNCIAS\n`;
+    textToCopy += `------------------------------------------------------\n`;
+    textToCopy += `Estudante: ${name}\n`;
+    textToCopy += `WhatsApp: ${whatsapp}\n`;
+    textToCopy += `Idade: ${age} anos\n`;
+    textToCopy += `------------------------------------------------------\n\n`;
+    textToCopy += `RESULTADOS PERCENTUAIS POR CATEGORIA:\n`;
+    
+    Object.keys(calculatedPercentages).forEach((cat) => {
+      textToCopy += `- ${intelligencesDetails[cat].name}: ${calculatedPercentages[cat]}%\n`;
+    });
+    
+    textToCopy += `\nINTELEGÊNCIA DESTAQUE: ${intelligencesDetails[topIntelligence].name} (${calculatedPercentages[topIntelligence]}%)\n\n`;
+    textToCopy += `Descrição: ${intelligencesDetails[topIntelligence].description}\n\n`;
+    textToCopy += `Cursos sugeridos: ${intelligencesDetails[topIntelligence].courses.join(", ")}\n\n`;
+    textToCopy += `Gerado em: eadon.com.br`;
 
     navigator.clipboard.writeText(textToCopy)
       .then(() => {
-        showToast("📋 Relatório copiado para a área de transferência!");
+        showToast("📋 Relatório copiado com sucesso!");
       })
       .catch((err) => {
         console.error("Clipboard copy failed:", err);
@@ -965,12 +788,10 @@ Garantir a melhor experiência de pós-vendas, guiando e apoiando os clientes a 
     
     document.body.appendChild(toast);
     
-    // Trigger transition
     setTimeout(() => {
       toast.classList.add("active");
     }, 10);
 
-    // Remove toast
     setTimeout(() => {
       toast.classList.remove("active");
       setTimeout(() => {
