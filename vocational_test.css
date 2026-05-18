@@ -1054,3 +1054,30 @@
     min-width: 0 !important;
   }
 }
+
+/* Vocational Test Info Accordion Styles */
+.vt-info-details {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.vt-info-details[open] {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06) !important;
+  border-color: #CBD5E1 !important;
+  transform: translateY(2px);
+}
+
+.vt-info-details[open] .vt-chevron {
+  transform: rotate(180deg);
+}
+
+.vt-info-details[open] .vt-info-summary {
+  background: #F1F5F9 !important;
+}
+
+.vt-info-summary::-webkit-details-marker {
+  display: none !important;
+}
+
+.vt-info-summary:hover {
+  background: #EBF1F7;
+}
