@@ -670,6 +670,36 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
     border-radius: 5px;
   }
 </style>
+
+<style id="layout-fixes">
+  /* Fix shadow clipping for the carousel */
+  #vc3-track-outer {
+    padding: 20px;
+    margin: -20px;
+  }
+  
+  /* Ensure backgrounds go full width */
+  .elementor-element-6f66e804,
+  .elementor-element-2c4adc2d,
+  .elementor-element-5836de76 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Ensure inner content stays boxed */
+  .elementor-element-6f66e804 > .e-con-inner,
+  .elementor-element-2c4adc2d > .e-con-inner,
+  .elementor-element-5836de76 > .e-con-inner {
+    max-width: 1140px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+  }
+
+  /* Tailwind-like utilities in case they aren't loaded */
+  .w-full { width: 100% !important; }
+  .max-w-6xl { max-width: 72rem !important; } /* 1152px */
+  .mx-auto { margin-left: auto !important; margin-right: auto !important; }
+</style>
 </head>
 <body data-rsssl="1" class="home wp-singular page-template page-template-elementor_canvas page page-id-14 wp-embed-responsive wp-theme-hello-elementor hello-elementor-default elementor-default elementor-template-canvas elementor-kit-6 elementor-page elementor-page-14">
 			<div data-elementor-type="wp-page" data-elementor-id="14" class="elementor elementor-14" data-elementor-post-type="page">
@@ -997,7 +1027,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 				</div>
 <div id="vc2-section">
   <div id="vc2-wrapper">
-    <button id="vc2-btn-prev" aria-label="Anterior">&#8249;</button>
+    <button id="vc2-btn-prev" aria-label="Anterior">‹</button>
     <div id="vc2-track-outer">
       <div id="vc2-track">
         <div class="vc2-slide"><img src="wp-content/uploads/2026/04/negocios-digitais.jpg" alt="Negócios Digitais" loading="lazy"></div>
@@ -1026,7 +1056,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
         <div class="vc2-slide"><img src="wp-content/uploads/2026/04/packs.jpg" alt="Packs" loading="lazy"></div>
       </div>
     </div>
-    <button id="vc2-btn-next" aria-label="Próximo">&#8250;</button>
+    <button id="vc2-btn-next" aria-label="Próximo">›</button>
   </div>
   <div id="vc2-dots">
     <button class="vc2-dot active" data-index="0" aria-label="Ir para slide 1"></button>
@@ -1352,8 +1382,8 @@ alta no mercado.					</p>
 				</div>
 					</div>
 				</div>
-		<div class="elementor-element elementor-element-5836de76 e-flex e-con-boxed e-con e-parent" data-id="5836de76" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
-					<div class="e-con-inner">
+		<section class="elementor-element elementor-element-5836de76 e-flex e-con e-parent e-con-full w-full" data-id="5836de76" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
+					<div class="e-con-inner max-w-6xl mx-auto w-full" style="max-width: 1140px; margin: 0 auto; width: 100%;">
 				<div class="elementor-element elementor-element-81af287 elementor-view-default elementor-widget elementor-widget-icon" data-id="81af287" data-element_type="widget" data-e-type="widget" data-widget_type="icon.default">
 				<div class="elementor-widget-container">
 							<div class="elementor-icon-wrapper">
@@ -1380,7 +1410,7 @@ alta no mercado.					</p>
 				</div>
 <div id="vc3-section">
   <div id="vc3-wrapper">
-    <button id="vc3-btn-prev" aria-label="Anterior">&#8249;</button>
+    <button id="vc3-btn-prev" aria-label="Anterior">‹</button>
     <div id="vc3-track-outer">
       <div id="vc3-track">
         <div class="vc3-slide"><img src="wp-content/uploads/2026/04/1-1-1024x1024.jpg" alt="História de Sucesso 1" loading="lazy"></div>
@@ -1393,7 +1423,7 @@ alta no mercado.					</p>
         <div class="vc3-slide"><img src="wp-content/uploads/2026/04/10-1024x1024.jpg" alt="História de Sucesso 8" loading="lazy"></div>
       </div>
     </div>
-    <button id="vc3-btn-next" aria-label="Próximo">&#8250;</button>
+    <button id="vc3-btn-next" aria-label="Próximo">›</button>
   </div>
   <div id="vc3-dots">
     <button class="vc3-dot active" data-index="0" aria-label="Ir para slide 1"></button>
@@ -1421,7 +1451,7 @@ alta no mercado.					</p>
 								</div>
 				</div>
 					</div>
-				</div>
+				</section>
 
 		<!-- SEÇÃO DO TESTE VOCACIONAL (Estilo Educa Mais Brasil - Branco Premium) -->
 		<div class="elementor-element elementor-element-vocational e-flex e-con-boxed e-con e-parent vt-teaser-section" id="teste-vocacional-section">
@@ -1454,7 +1484,7 @@ alta no mercado.					</p>
 						<span>Como funciona o teste</span>
 						<span class="vt-chevron" style="transition: transform 0.3s ease; display: inline-flex; align-items: center;">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5C6B82" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down">
-								<path d="m6 9 6 6 6-6"/>
+								<path d="m6 9 6 6 6-6"></path>
 							</svg>
 						</span>
 					</summary>
@@ -1608,8 +1638,8 @@ alta no mercado.					</p>
 
 					</div>
 				</details>
-		<div class="elementor-element elementor-element-6f66e804 e-flex e-con-boxed e-con e-parent" data-id="6f66e804" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
-					<div class="e-con-inner">
+		<section class="elementor-element elementor-element-6f66e804 e-flex e-con e-parent e-con-full w-full" data-id="6f66e804" data-element_type="container" data-e-type="container" data-settings="{&quot;background_background&quot;:&quot;gradient&quot;}">
+					<div class="e-con-inner max-w-6xl mx-auto w-full" style="max-width: 1140px; margin: 0 auto; width: 100%;">
 		<div class="elementor-element elementor-element-6d509626 e-con-full e-flex e-con e-child" data-id="6d509626" data-element_type="container" data-e-type="container">
 				<div class="elementor-element elementor-element-1a5df81b elementor-widget elementor-widget-heading" data-id="1a5df81b" data-element_type="widget" data-e-type="widget" data-widget_type="heading.default">
 				<div class="elementor-widget-container">
@@ -1737,7 +1767,7 @@ alta no mercado.					</p>
 				</div>
 				</div>
 					</div>
-				</div>
+				</section>
 		<div class="elementor-element elementor-element-41e63927 e-flex e-con-boxed e-con e-parent" data-id="41e63927" data-element_type="container" data-e-type="container" id="sobre" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
 					<div class="e-con-inner">
 				<div class="elementor-element elementor-element-6fb90556 elementor-widget elementor-widget-image" data-id="6fb90556" data-element_type="widget" data-e-type="widget" data-widget_type="image.default">
@@ -1756,8 +1786,8 @@ alta no mercado.					</p>
 				</div>
 					</div>
 				</div>
-		<div class="elementor-element elementor-element-2c4adc2d e-flex e-con-boxed e-con e-parent" data-id="2c4adc2d" data-element_type="container" data-e-type="container" id="rodape" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
-					<div class="e-con-inner">
+		<footer class="elementor-element elementor-element-2c4adc2d e-flex e-con e-parent e-con-full w-full" data-id="2c4adc2d" data-element_type="container" data-e-type="container" id="rodape" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
+					<div class="e-con-inner max-w-6xl mx-auto w-full" style="max-width: 1140px; margin: 0 auto; width: 100%;">
 				<div class="elementor-element elementor-element-5d52377e elementor-widget elementor-widget-image" data-id="5d52377e" data-element_type="widget" data-e-type="widget" data-widget_type="image.default">
 				<div class="elementor-widget-container">
 																<a href="#home">
@@ -1809,7 +1839,7 @@ alta no mercado.					</p>
 									<p><span style="white-space-collapse: preserve;">Política de Privacidade e Termos de Uso</span></p>								</div>
 				</div>
 					</div>
-				</div>
+				</footer>
 		<div class="elementor-element elementor-element-32f41f09 e-flex e-con-boxed e-con e-parent" data-id="32f41f09" data-element_type="container" data-e-type="container">
 					<div class="e-con-inner">
 				<div class="elementor-element elementor-element-40bfd258 elementor-view-stacked elementor-fixed elementor-shape-circle elementor-widget elementor-widget-icon" data-id="40bfd258" data-element_type="widget" data-e-type="widget" data-settings="{&quot;_position&quot;:&quot;fixed&quot;}" data-widget_type="icon.default">
@@ -2210,4 +2240,5 @@ document.addEventListener("DOMContentLoaded", function() {
 })();
 </script>
 <script src="vocational_test.js"></script>
-</body></html>
+
+</div></div></body></html>
