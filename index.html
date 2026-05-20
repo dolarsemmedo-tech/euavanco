@@ -824,7 +824,6 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-96"><a href="#cursos" class="elementor-item elementor-item-anchor">Cursos</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-97"><a href="#diferenciais" class="elementor-item elementor-item-anchor">Diferenciais</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-98"><a href="https://wa.me/5551997911411?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20os%20cursos%20do%20portal%20Inove%20EAD." class="elementor-item">Contato</a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-99"><a href="#blog" class="elementor-item elementor-item-anchor">Blog</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-100"><a href="https://eadon.com.br/inoveead" class="elementor-item">Portal do aluno</a></li>
 </ul>			</nav>
 					<div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Menu Toggle" aria-expanded="false">
@@ -834,7 +833,6 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-96"><a href="#cursos" class="elementor-item elementor-item-anchor" tabindex="-1">Cursos</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-97"><a href="#diferenciais" class="elementor-item elementor-item-anchor" tabindex="-1">Diferenciais</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-98"><a href="https://wa.me/5551997911411?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20os%20cursos%20do%20portal%20Inove%20EAD." class="elementor-item" tabindex="-1">Contato</a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-99"><a href="#blog" class="elementor-item elementor-item-anchor" tabindex="-1">Blog</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-100"><a href="https://eadon.com.br/inoveead" class="elementor-item" tabindex="-1">Portal do aluno</a></li>
 </ul>			</nav>
 						</div>
@@ -1901,7 +1899,6 @@ alta no mercado.					</p>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-96"><a href="#cursos" class="elementor-item elementor-item-anchor">Cursos</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-97"><a href="#diferenciais" class="elementor-item elementor-item-anchor">Diferenciais</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-98"><a href="https://wa.me/5551997911411?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20os%20cursos%20do%20portal%20Inove%20EAD." class="elementor-item">Contato</a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-99"><a href="#blog" class="elementor-item elementor-item-anchor">Blog</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-100"><a href="https://eadon.com.br/inoveead" class="elementor-item">Portal do aluno</a></li>
 </ul>			</nav>
 					<div class="elementor-menu-toggle" role="button" tabindex="0" aria-label="Menu Toggle" aria-expanded="false">
@@ -1911,7 +1908,6 @@ alta no mercado.					</p>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-96"><a href="#cursos" class="elementor-item elementor-item-anchor" tabindex="-1">Cursos</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-97"><a href="#diferenciais" class="elementor-item elementor-item-anchor" tabindex="-1">Diferenciais</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-98"><a href="https://wa.me/5551997911411?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20os%20cursos%20do%20portal%20Inove%20EAD." class="elementor-item" tabindex="-1">Contato</a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-99"><a href="#blog" class="elementor-item elementor-item-anchor" tabindex="-1">Blog</a></li>
 <li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-100"><a href="https://eadon.com.br/inoveead" class="elementor-item" tabindex="-1">Portal do aluno</a></li>
 </ul>			</nav>
 						</div>
@@ -2412,6 +2408,34 @@ document.addEventListener("DOMContentLoaded", function() {
     document.addEventListener('DOMContentLoaded', init4);
   } else {
     init4();
+  }
+})();
+</script>
+
+<script>
+(function() {
+  function initVideoRedirect() {
+    var videoWidget = document.querySelector('.elementor-element-71b8eb3b');
+    if (videoWidget) {
+      // Intercept click in the capture phase to bypass Elementor's default video play behavior
+      videoWidget.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        window.open('https://eadon.com.br/inoveead', '_blank');
+      }, true);
+      // Ensure cursor displays as a pointer over the overlay to indicate clickability
+      var overlay = videoWidget.querySelector('.elementor-custom-embed-image-overlay');
+      if (overlay) {
+        overlay.style.cursor = 'pointer';
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVideoRedirect);
+  } else {
+    initVideoRedirect();
   }
 })();
 </script>
