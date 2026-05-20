@@ -32,7 +32,7 @@
 /* Teaser Section Classes for Perfect Mobile Responsiveness */
 .vt-teaser-section {
   background: #FFFFFF !important;
-  padding: 90px 24px !important;
+  padding: 180px 24px !important;
   position: relative !important;
   overflow: hidden !important;
   border-top: 1px solid #E2E8F0 !important;
@@ -144,7 +144,7 @@
 /* Responsive Mobile Rules to Prevent Viewport Stretch and Gaps */
 @media (max-width: 991px) {
   .vt-teaser-section {
-    padding: 60px 16px !important;
+    padding: 120px 16px !important;
   }
   
   .vt-teaser-inner {
