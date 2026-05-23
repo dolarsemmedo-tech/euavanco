@@ -1475,17 +1475,61 @@ alta no mercado.					</p>
 				</div>
 				<div class="elementor-element elementor-element-7332102b elementor-widget elementor-widget-text-editor" data-id="7332102b" data-element_type="widget" data-e-type="widget" data-widget_type="text-editor.default">
 				<div class="elementor-widget-container">
-									<p>VEJA A PLATAFORMA POR DENTRO:</p>								</div>
+									<style>
+										@media (max-width: 767px) {
+											.desktop-only-br {
+												display: none;
+											}
+										}
+									</style>
+									<p>VEJA NO VÍDEO ABAIXO <br class="desktop-only-br">OS MOTIVOS PARA FAZER UM CURSO EAD</p>								</div>
 				</div>
 		<div class="elementor-element elementor-element-41c4c625 e-con-full e-flex e-con e-child" data-id="41c4c625" data-element_type="container" data-e-type="container">
 				<div class="elementor-element elementor-element-71b8eb3b elementor-widget__width-initial elementor-widget-mobile__width-inherit elementor-widget elementor-widget-video" data-id="71b8eb3b" data-element_type="widget" data-e-type="widget" data-settings="{&quot;youtube_url&quot;:&quot;https:\/\/www.youtube.com\/watch?v=XHOmBV4js_E&quot;,&quot;show_image_overlay&quot;:&quot;yes&quot;,&quot;image_overlay&quot;:{&quot;url&quot;:&quot;\/wp-content\/uploads\/2026\/04\/Design-sem-nome.jpg&quot;,&quot;id&quot;:56,&quot;size&quot;:&quot;&quot;},&quot;video_type&quot;:&quot;youtube&quot;,&quot;controls&quot;:&quot;yes&quot;}" data-widget_type="video.default">
-				<div class="elementor-widget-container">
-							<div class="elementor-wrapper elementor-open-inline">
-			<div class="elementor-video"></div>				<div class="elementor-custom-embed-image-overlay" style="background-image: url(wp-content/uploads/2026/04/Design-sem-nome.jpg);">
-																<div class="elementor-custom-embed-play" role="button" aria-label="Reproduzir vídeo" tabindex="0">
-							<svg aria-hidden="true" class="e-font-icon-svg e-eicon-play" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg"><path d="M838 162C746 71 633 25 500 25 371 25 258 71 163 162 71 254 25 367 25 500 25 633 71 746 163 837 254 929 367 979 500 979 633 979 746 933 838 837 929 746 975 633 975 500 975 367 929 254 838 162M808 192C892 279 933 379 933 500 933 621 892 725 808 808 725 892 621 938 500 938 379 938 279 896 196 808 113 725 67 621 67 500 67 379 108 279 196 192 279 108 383 62 500 62 621 62 721 108 808 192M438 392V642L642 517 438 392Z"></path></svg>						</div>
+				<div class="elementor-widget-container" style="overflow: hidden; border-radius: 15px; position: relative;">
+							<style>
+								.custom-play-btn:hover {
+									transform: scale(1.1);
+									background-color: #00BF60 !important;
+								}
+							</style>
+							<div class="elementor-wrapper elementor-open-inline" style="overflow: hidden; border-radius: 15px; position: relative;">
+								<video id="eadon-platform-video" poster="wp-content/uploads/2026/04/Design-sem-nome.jpg" preload="none" style="width: 100%; height: auto; display: block; border-radius: 15px; border: none; outline: none; object-fit: cover; aspect-ratio: 16/9; box-shadow: 0px 10px 30px rgba(0,0,0,0.15);">
+									<source src="https://docs.google.com/uc?export=download&id=1DjkwfoP2IcVf25cFhMbMauoPSR9_yIss" type="video/mp4">
+									Seu navegador não suporta a reprodução deste vídeo.
+								</video>
+								<div id="video-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.3s ease; border-radius: 15px; z-index: 2; background: rgba(0,0,0,0.05);">
+									<div class="custom-play-btn" style="width: 80px; height: 80px; background: rgba(0, 0, 0, 0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease, background-color 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+										<svg aria-hidden="true" style="width: 32px; height: 32px; fill: #ffffff; margin-left: 6px; display: block;" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+											<path d="M438 392V642L642 517 438 392Z"></path>
+										</svg>
 									</div>
-					</div>
+								</div>
+							</div>
+							<script>
+								document.addEventListener('DOMContentLoaded', function() {
+									var video = document.getElementById('eadon-platform-video');
+									var overlay = document.getElementById('video-overlay');
+									if (video && overlay) {
+										overlay.addEventListener('click', function() {
+											video.controls = true;
+											video.play();
+											overlay.style.opacity = '0';
+											setTimeout(function() {
+												overlay.style.display = 'none';
+											}, 300);
+										});
+										video.addEventListener('ended', function() {
+											video.controls = false;
+											overlay.style.display = 'flex';
+											setTimeout(function() {
+												overlay.style.opacity = '1';
+											}, 10);
+											video.load();
+										});
+									}
+								});
+							</script>
 						</div>
 				</div>
 				</div>
@@ -2445,31 +2489,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 <script>
-(function() {
-  function initVideoRedirect() {
-    var videoWidget = document.querySelector('.elementor-element-71b8eb3b');
-    if (videoWidget) {
-      // Intercept click in the capture phase to bypass Elementor's default video play behavior
-      videoWidget.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        window.open('/portal', '_blank');
-      }, true);
-      // Ensure cursor displays as a pointer over the overlay to indicate clickability
-      var overlay = videoWidget.querySelector('.elementor-custom-embed-image-overlay');
-      if (overlay) {
-        overlay.style.cursor = 'pointer';
-      }
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initVideoRedirect);
-  } else {
-    initVideoRedirect();
-  }
-})();
+// O redirecionamento anterior para o portal foi removido para permitir a reprodução do vídeo local.
 </script>
 
 </body></html>
