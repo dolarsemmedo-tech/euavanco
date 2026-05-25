@@ -12,6 +12,38 @@
   // If empty, the system will save leads locally to localStorage as a fallback.
   const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwk6BRBPsDJgvy7wRE_8G5l-aLxPqBLB55g_87Vq0OSrmWvdCRO2j4RdCw4dV9hwXzspw/exec"; 
 
+  // Dynamic getters for School Name and WhatsApp Phone
+  function getSchoolName() {
+    let name = "O Melhor EAD"; // Fallback default
+    const footerNameElem = document.querySelector(".elementor-element-26471255");
+    if (footerNameElem) {
+      const txt = footerNameElem.textContent.trim().replace(/\s+/g, ' ');
+      if (txt) {
+        return txt;
+      }
+    }
+    return name;
+  }
+
+  function getWhatsAppPhone() {
+    let phone = "5583986329204"; // Fallback default
+    const waElement = document.querySelector('a[href*="wa.me/"]');
+    if (waElement) {
+      const match = waElement.href.match(/wa\.me\/([0-9]+)/);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    const apiWaElement = document.querySelector('a[href*="api.whatsapp.com/send"]');
+    if (apiWaElement) {
+      const match = apiWaElement.href.match(/phone=([0-9]+)/);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return phone;
+  }
+
   // 32-Question Database mapped to the 8 Intelligences
   const questions = [
     { id: 1, text: "Costumo interpretar palavras, gestos e objetivos subentendidos em uma conversa.", category: "interpessoal" },
@@ -449,7 +481,7 @@
             <div class="vt-accordion-content">
               <p class="vt-accordion-desc-text">${detail.description}</p>
               <div class="vt-courses-box">
-                <h6>📚 Cursos Recomendados no EADon:</h6>
+                <h6>📚 Cursos Recomendados no ${getSchoolName()}:</h6>
                 <div class="vt-courses-tags">
                   ${detail.courses.map(course => `<span class="vt-course-tag">${course}</span>`).join("")}
                 </div>
@@ -493,7 +525,7 @@
             </p>
 
             <div class="vt-courses-box-top">
-              <h6>🎯 Melhores Cursos recomendados para você no EADon:</h6>
+              <h6>🎯 Melhores Cursos recomendados para você no ${getSchoolName()}:</h6>
               <div class="vt-courses-tags">
                 ${topDetail.courses.map(course => `<span class="vt-course-tag-top">${course}</span>`).join("")}
               </div>
@@ -504,7 +536,7 @@
               <div class="vt-whatsapp-header">
                 <span class="vt-whatsapp-badge-icon">💬</span>
                 <div>
-                  <h6>Garantir Bolsa com Orientador EADon</h6>
+                  <h6>Garantir Bolsa com Orientador ${getSchoolName()}</h6>
                   <p>Fale grátis com nosso consultor no WhatsApp e garanta uma bolsa de estudo exclusiva para o seu perfil!</p>
                 </div>
               </div>
@@ -739,11 +771,12 @@
     const name = userResponses.lead_name || "Estudante";
     const topDetail = intelligencesDetails[topIntelligence];
     const topVal = calculatedPercentages[topIntelligence];
+    const schoolName = getSchoolName();
 
-    const baseMessage = `Olá! Meu nome é ${name} e acabei de concluir o Teste Vocacional das Múltiplas Inteligências no portal EADon! 🚀\n\nMinha inteligência predominante é:\n👉 *${topDetail.name}* com *${topVal}%* de afinidade!\n\nGostaria de falar com um consultor para conhecer os cursos sugeridos nessa área e resgatar minha Bolsa de Estudo exclusiva! 🎓`;
+    const baseMessage = `Olá! Meu nome é ${name} e acabei de concluir o Teste Vocacional das Múltiplas Inteligências no portal ${schoolName}! 🚀\n\nMinha inteligência predominante é:\n👉 *${topDetail.name}* com *${topVal}%* de afinidade!\n\nGostaria de falar com um consultor para conhecer os cursos sugeridos nessa área e resgatar minha Bolsa de Estudo exclusiva! 🎓`;
     
-    // Sales consultant phone number
-    const whatsappPhone = "5551997911411"; 
+    // Sales consultant phone number (dynamically extracted from page)
+    const whatsappPhone = getWhatsAppPhone(); 
     const url = `https://api.whatsapp.com/send?phone=${whatsappPhone}&text=${encodeURIComponent(baseMessage)}`;
     
     window.open(url, "_blank");
@@ -754,8 +787,10 @@
     const name = userResponses.lead_name || "Estudante";
     const whatsapp = userResponses.lead_whatsapp || "";
     const age = userResponses.lead_age || "";
+    const schoolName = getSchoolName();
+    const host = window.location.hostname || "eadon.com.br";
     
-    let textToCopy = `RELATÓRIO VOCACIONAL EADON - MÚLTIPLAS INTELIGÊNCIAS\n`;
+    let textToCopy = `RELATÓRIO VOCACIONAL ${schoolName.toUpperCase()} - MÚLTIPLAS INTELIGÊNCIAS\n`;
     textToCopy += `------------------------------------------------------\n`;
     textToCopy += `Estudante: ${name}\n`;
     textToCopy += `WhatsApp: ${whatsapp}\n`;
@@ -770,7 +805,7 @@
     textToCopy += `\nINTELEGÊNCIA DESTAQUE: ${intelligencesDetails[topIntelligence].name} (${calculatedPercentages[topIntelligence]}%)\n\n`;
     textToCopy += `Descrição: ${intelligencesDetails[topIntelligence].description}\n\n`;
     textToCopy += `Cursos sugeridos: ${intelligencesDetails[topIntelligence].courses.join(", ")}\n\n`;
-    textToCopy += `Gerado em: eadon.com.br`;
+    textToCopy += `Gerado em: ${host}`;
 
     navigator.clipboard.writeText(textToCopy)
       .then(() => {
