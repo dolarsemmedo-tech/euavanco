@@ -44,6 +44,18 @@
     return phone;
   }
 
+  function getPortalLink() {
+    let link = "/portal"; // Fallback default
+    const portalElement = document.querySelector('a[href*="portal"]');
+    if (portalElement) {
+      const href = portalElement.getAttribute("href");
+      if (href) {
+        return href;
+      }
+    }
+    return link;
+  }
+
   // 32-Question Database mapped to the 8 Intelligences
   const questions = [
     { id: 1, text: "Costumo interpretar palavras, gestos e objetivos subentendidos em uma conversa.", category: "interpessoal" },
@@ -596,7 +608,7 @@
       
       document.getElementById("vt-btn-access-portal").addEventListener("click", function () {
         // Redirect to EADon courses portal in new tab
-        window.open("https://eadon.com.br/inoveead", "_blank");
+        window.open(getPortalLink(), "_blank");
         closeModal();
       });
     }
