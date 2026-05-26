@@ -10,7 +10,7 @@
   // Configuration
   // Set your Google Sheets Web App URL here. 
   // If empty, the system will save leads locally to localStorage as a fallback.
-  const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwk6BRBPsDJgvy7wRE_8G5l-aLxPqBLB55g_87Vq0OSrmWvdCRO2j4RdCw4dV9hwXzspw/exec"; 
+  const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbz6p5nb8qLHoSdTDlXFakZ2_RBxqFfzK6WSpaSnNQVWwRRP6fhNK5wVb0dYL435adqm/exec"; 
 
   // Dynamic getters for School Name and WhatsApp Phone
   function getSchoolName() {
