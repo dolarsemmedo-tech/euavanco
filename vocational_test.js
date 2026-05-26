@@ -14,7 +14,7 @@
 
   // Dynamic getters for School Name and WhatsApp Phone
   function getSchoolName() {
-    let name = "O Melhor EAD"; // Fallback default
+    let name = "EuAvanço"; // Fallback default
     const footerNameElem = document.querySelector(".elementor-element-26471255");
     if (footerNameElem) {
       const txt = footerNameElem.textContent.trim().replace(/\s+/g, ' ');
@@ -26,7 +26,7 @@
   }
 
   function getWhatsAppPhone() {
-    let phone = "5583986329204"; // Fallback default
+    let phone = "5551989767239"; // Fallback default
     const waElement = document.querySelector('a[href*="wa.me/"]');
     if (waElement) {
       const match = waElement.href.match(/wa\.me\/([0-9]+)/);
